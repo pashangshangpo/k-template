@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Debug</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        ul {
+            list-style: none;
+        }
+        .red {
+            color: red;
+        }
+        .no-data {
+            text-align: center;
+            margin: 50px auto;
+        }
+        [v-cloak] {
+            display: none;
+        }
+        .boxUl {
+            width: 750px;
+            margin: 0 auto;
+        }
+        .boxUl .title {
+            white-space: nowrap;
+        }
+        .boxUl li {
+            margin-bottom: 10px;
+            padding: 5px 12px;
+            border: 1px dashed #333;
+        }
+        .boxUl .content .key {
+             padding-left: 15px;
+         }
+        .boxUl .content .value {
+            display: inline-block;
+            margin-left: 15px;
+            font-weight: normal;
+            vertical-align: middle;
+        }
+        .boxUl .active {
+            border-color: red;
+        }
+        .list-nav {
+            position: fixed;
+            left: 2%;
+            top: 10%;
+            max-height: 700px;
+            overflow-y: auto;
+        }
+        .list-nav a {
+            display: block;
+            margin-top: 2px;
+            color: #000;
+        }
+        .list-nav .active {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<div id="app" v-cloak>
+    <h3 class="no-data" v-if="list.length < 1">亲,请先请求一条数据~</h3>
+    <nav class="list-nav">
+        <a v-on:click="changeActive(index)"
+           :href="'#c' + index"
+           v-for="(item, index) in list"
+           :title="item.requestInfo.urlParse.path"
+           :class="active === index ? 'active' : ''"
+        >
+            {{item.requestInfo.urlParse.path.length > 30 ? item.requestInfo.urlParse.path.slice(0, 30) + '...' : item.requestInfo.urlParse.path}}
+        </a>
+    </nav>
+    <ul class="boxUl">
+        <li  :id="'c' + index" v-for="(item, index) in list" v-bind:class="{active: active === index}">
+            <h4 class="title">
+                <span class="red" v-if="item.resultData && item.resultData.test">Local =&gt;</span>
+                <span class="red" v-if="item.resultData && !item.resultData.test">Server =&gt;</span>
+                Request {{item.requestInfo.method}} => {{item.requestInfo.url}}
+            </h4>
+            <div class="content">
+                <div>
+                    <h5 class="key" v-if="item.postData.html || item.postData.text">postData
+                        <p class="value" v-if="item.postData.html" v-html="item.postData.html"></p>
+                        <p class="value" v-if="item.postData.text" v-text="item.postData.text"></p>
+                    </h5>
+                </div>
+                <div>
+                    <h5 class="key" v-if="item.formData.html || item.formData.text">formData
+                        <p class="value" v-if="item.formData.html" v-html="item.formData.html"></p>
+                        <p class="value" v-if="item.formData.text" v-text="item.formData.text"></p>
+                    </h5>
+                </div>
+                <div>
+                    <h5 class="key" v-if="item.resultData.html || item.resultData.text">resultData
+                        <p class="value" v-if="item.resultData.html" v-html="item.resultData.html"></p>
+                        <p class="value" v-if="item.resultData.text" v-text="item.resultData.text"></p>
+                    </h5>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.slim.js"></script>
+<script>
+    let vm = new Vue({
+        el: '#app',
+        data: {
+            active: -1,
+            list: []
+        },
+        methods: {
+            changeActive(index) {
+                this.active = index;
+            }
+        }
+    });
+
+    // 连接socket
+    let socket = io.connect(`http://${location.hostname}:9870`);
+    socket.on('data', res => {
+        vm.list = res;
+    });
+
+    // 关闭页面或刷新时,清空数据
+    window.addEventListener('beforeunload', () => {
+        socket.emit('clearData', '');
+    });
+</script>
+</body>
+</html>
