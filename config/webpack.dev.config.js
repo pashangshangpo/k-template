@@ -19,7 +19,7 @@ module.exports = {
 
         path: resolve(__dirname, 'dev'),
 
-        publicPath: '/src'
+        publicPath: '/'
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin(),

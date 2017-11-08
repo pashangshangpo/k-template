@@ -7,6 +7,7 @@
   "devDependencies": {
     "babel-runtime": "^6.26.0",
     "json-pretty-html": "^1.0.2",
+    "koa-route": "^3.2.0",
     "koa-static": "^4.0.1",
     "koa-webpack": "^1.0.0",
     "koa2": "^2.0.0-alpha.7",
@@ -15,7 +16,8 @@
     "socket.io": "^2.0.4"
   },
   "scripts": {
-    "dev": "node-dev ./index/app.js ./config/api.js ./config/webpack.dev.config.js",
+    "dev": "node-dev ./server/server.dev.js 8087 ./api/api.js ./config/webpack.dev.config.js",
+    "dest": "node-dev ./server/server.dest.js ./config/webpack.dest.config.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
