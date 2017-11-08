@@ -15,7 +15,7 @@ webpackPath = `${path.resolve('.')}/${webpackPath}`;
 apiPath = `${path.resolve('.')}/${apiPath}`;
 
 app.use(route.get('/', cxt => {
-    cxt.body = fs.readFileSync(path.join(path.resolve('.'), 'src', 'dev.html')).toString();
+    cxt.body = fs.readFileSync(path.join(path.resolve('.'), 'config', 'dev.html')).toString();
 }));
 
 // 编译webpack
