@@ -1,12 +1,5 @@
-/**
- * @file webpack.dev.config.js
- * @date 2017-10-15 14:01
- * @author xiaozhihua
- */
-
-const {resolve} = require('path');
+const {resolve, join} = require('path');
 const webpack = require('webpack');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
     entry: {
@@ -16,10 +9,8 @@ module.exports = {
         ]
     },
     output: {
-        filename: 'bundle.js',
-
-        // path: resolve(__dirname, 'dev'),
-
+        filename: 'js/bundle.js',
+        path: resolve('.', 'dev'),
         publicPath: '/'
     },
     module: {
@@ -27,32 +18,36 @@ module.exports = {
             {
                 test: /\.js$/,
                 exclude: /(node_modules|bower_components)/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: ['@babel/preset-env']
-                    }
-                }
+                use: ['babel-loader']
             },
             {
                 test: /\.css$/,
-                use: ExtractTextPlugin.extract({
-                    fallback: 'style-loader',
-                    use: ['css-loader', 'postcss-loader']
-                })
+                exclude: /(node_modules|bower_components)/,
+                use: [
+                    'style-loader',
+                    {loader: 'css-loader', options: {importLoaders: 1}}, 
+                    'postcss-loader'
+                ]
             },
             {
-                test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
-                loader: 'url-loader',
-                options: {
-                    limit: 10000
-                }
+                test: /\.(png|svg|jpg|gif)/,
+                use: [
+                    {
+                        loader: 'url-loader',
+                        options: {
+                          name: 'images/[name].[ext]',
+                          limit: 8192
+                        }
+                    }
+                ]
             }
         ]
     },
     plugins: [
+        new webpack.DllReferencePlugin({
+            manifest: require(resolve('.', 'dev/js/lib', "vendor-manifest.json"))
+        }),
         new webpack.HotModuleReplacementPlugin(),
-        new webpack.NamedModulesPlugin(),
-        new ExtractTextPlugin('css/[name].css')
+        new webpack.NamedModulesPlugin()
     ]
 };

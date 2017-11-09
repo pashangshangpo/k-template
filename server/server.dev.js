@@ -18,6 +18,10 @@ app.use(route.get('/', cxt => {
     cxt.body = fs.readFileSync(path.join(path.resolve('.'), 'config', 'dev.html')).toString();
 }));
 
+app.use(route.get('/dev/js/lib/vendor.dll.js', cxt => {
+    cxt.body = fs.readFileSync(path.resolve('.', 'dev/js/lib/vendor.dll.js')).toString();
+}));
+
 // 编译webpack
 let webpackConfig = require(webpackPath);
 app.use(webpackMiddleware({
