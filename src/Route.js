@@ -5,7 +5,7 @@ class Home extends Component {
 	render() {
 		return (
 			<div>
-				Home11
+				Home
 			</div>
 		);
 	};

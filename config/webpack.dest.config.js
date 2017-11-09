@@ -1,23 +1,18 @@
-/**
- * @file webpack.dev.config.js
- * @date 2017-10-15 14:01
- * @author xiaozhihua
- */
-
-const {resolve} = require('path');
+const {resolve, join} = require('path');
 const webpack = require('webpack');
 
 module.exports = {
     entry: {
         index: [
             './src/index.js'
+        ],
+        test: [
+            './src/test.js'
         ]
     },
     output: {
-        filename: 'bundle.js',
-
-        path: resolve(__dirname, 'dev'),
-
+        filename: 'js/[name].bundle.js',
+        path: resolve('.', 'dest'),
         publicPath: '/'
     },
     module: {
@@ -25,12 +20,7 @@ module.exports = {
             {
                 test: /\.js$/,
                 exclude: /(node_modules|bower_components)/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: ['@babel/preset-env']
-                    }
-                }
+                use: ['babel-loader']
             },
             {
                 test: /\.css$/,
@@ -56,11 +46,8 @@ module.exports = {
         ]
     },
     plugins: [
-        new webpack.optimize.UglifyJsPlugin({
-          compress: {
-            warnings: false
-          }
-        }),
-        new webpack.NamedModulesPlugin()
+        new webpack.DllReferencePlugin({
+            manifest: require(resolve('.', 'dest/js/lib', "vendor-manifest.json"))
+        })
     ]
 };

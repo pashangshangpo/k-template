@@ -38,9 +38,10 @@
     "webpack": "3.8.1"
   },
   "scripts": {
-    "dll": "sudo webpack --config ./config/webpack.dll.dev.js",
+    "devdll": "sudo webpack --config ./config/webpack.dll.dev.js",
     "dev": "node-dev ./server/server.dev.js 8087 ./api/api.js ./config/webpack.dev.config.js",
-    "dest": "node-dev ./server/server.dest.js ./config/webpack.dest.config.js",
+    "destdll": "sudo webpack --config ./config/webpack.dll.dest.js",
+    "dest": "node-dev ./server/server.dest.js config/webpack.dest.config.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
