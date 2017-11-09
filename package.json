@@ -21,7 +21,6 @@
     "babel-preset-stage-2": "^6.24.1",
     "babel-runtime": "6.26.0",
     "css-loader": "^0.28.7",
-    "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^1.1.5",
     "json-pretty-html": "^1.0.2",
     "koa-route": "3.2.0",
@@ -38,9 +37,9 @@
     "webpack": "3.8.1"
   },
   "scripts": {
-    "devdll": "sudo webpack --config ./config/webpack.dll.dev.js",
+    "devdll": "webpack --config ./config/webpack.dll.dev.js",
     "dev": "node-dev ./server/server.dev.js 8087 ./api/api.js ./config/webpack.dev.config.js",
-    "destdll": "sudo webpack --config ./config/webpack.dll.dest.js",
+    "destdll": "webpack --config ./config/webpack.dll.dest.js",
     "dest": "node-dev ./server/server.dest.js config/webpack.dest.config.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
