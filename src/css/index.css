@@ -1,17 +1,3 @@
-@import './common.css';
-
-:root {
-  --baseColor: pink;
-}
-
-body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: url('../images/test.png');
-  color: var(--baseColor);
-
-  & span {
-    display: flex;
-  }
+div {
+  color: red;
 }

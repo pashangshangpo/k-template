@@ -1,9 +1,3 @@
 div {
-    display: flex;
-    margin: 10px;
-
-    & ul {
-        display: flex;
-        color: pink;
-    }
+  color: red;
 }
