@@ -46,6 +46,11 @@ module.exports = {
         ]
     },
     plugins: [
+        new webpack.DefinePlugin({
+            'process.env': {
+                'NODE_ENV': 'production'
+            }
+        }),
         new webpack.DllReferencePlugin({
             manifest: require(resolve('.', 'dest/js/lib', "vendor-manifest.json"))
         })

@@ -25,8 +25,20 @@ module.exports = {
                 exclude: /(node_modules|bower_components)/,
                 use: [
                     'style-loader',
-                    {loader: 'css-loader', options: {importLoaders: 1}}, 
-                    'postcss-loader'
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            importLoaders: 1
+                        }
+                    },
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            config: {
+                                path: './config'
+                            }
+                        }
+                    }
                 ]
             },
             {
@@ -44,6 +56,11 @@ module.exports = {
         ]
     },
     plugins: [
+        new webpack.DefinePlugin({
+            'process.env': {
+                'NODE_ENV': 'development'
+            }
+        }),
         new webpack.DllReferencePlugin({
             manifest: require(resolve('.', 'dev/js/lib', "vendor-manifest.json"))
         }),
