@@ -1,18 +1,20 @@
 module.exports = () => {
-    if (process.env.NODE_ENV === 'development') {
-        return {
-            plugins: [
-                require('postcss-cssnext')()
-            ]
-        };
-    }
+  let common = [
+    require('postcss-cssnext')()
+  ];
 
-    return {
-        plugins: [
-            require('postcss-cssnext')(),
-            require('cssnano')({
-                preset: 'advanced'
-            })
-        ]
-    };
+  if (process.env.NODE_ENV === 'development') {
+      return {
+          plugins: common.concat([
+          ])
+      };
+  }
+
+  return {
+      plugins: common.concat([
+        require('cssnano')({
+          preset: 'advanced'
+        })
+      ])
+  };
 };
