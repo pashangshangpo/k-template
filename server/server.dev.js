@@ -1,7 +1,8 @@
 const http = require('http');
 const fs = require('fs');
 const {resolve, join} = require('path');
-const util = require('./util/util');
+const {fileContentReplace, replace, appendCss, appendJs} = require('./util/util');
+const {devHtmlPath, injectPath} = require('../config/config');
 const Koa = require('koa2');
 const app = new Koa();
 const route = require('koa-route');
@@ -17,12 +18,28 @@ apiPath = `${resolve('.')}/${apiPath}`;
 
 const webpackConfig = require(webpackPath);
 const entry = webpackConfig.entry;
-const html = fs.readFileSync(resolve('.', 'config/dev.html')).toString();
+const dev = require(injectPath).dev;
+
+// 模板内容
+let html = fs.readFileSync(devHtmlPath).toString();
+
+// 向模板中注入代码
+for (let key of Object.keys(dev)) {
+  let section = dev[key];
+  if (section.length > 0) {
+    if (key === 'css') {
+      html = appendCss(html, section);
+    }
+    else if (key === 'js') {
+      html = appendJs(html, section);
+    }
+  }
+}
 
 // 替换模板
 for (let key in entry) {
 	let curHtml = '';
-	fs.writeFileSync(resolve('.', 'dev', `${key}.html`), curHtml = util.replace(html, {
+	fs.writeFileSync(resolve('.', 'dev', `${key}.html`), curHtml = replace(html, {
 		entryName: key,
 		dateTime: Date.now()
 	}));

@@ -1,6 +1,7 @@
 const {resolve, join} = require('path');
 const fs = require('fs');
 const shell = require('shelljs');
+const {fileContentReplace} = require('./util/util');
 const {root, project} = require('../config/config');
 const ideaName = process.argv[2];
 const filter = [
@@ -47,12 +48,6 @@ cp(
 );
 
 // 文件内容替换
-const fileContentReplace = (filePath, keys) => {
-  for (let key in keys) {
-    fs.writeFileSync(filePath, fs.readFileSync(filePath).toString().replace(key, keys[key]));
-  }
-};
-
 fileContentReplace(join(pwd(), ideaName, 'package.json'), {
   [project]: ideaName
 });
