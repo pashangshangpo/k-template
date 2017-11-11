@@ -4,7 +4,7 @@ module.exports = {
       '//www.ddi.com/cc.css'
     ],
     js: [
-      'dev/js/lib/vendor.dll.js',
+      'dev/js/lib/vendor.dll.js?v=15.4',
       'js/@entryName@.bundle.js',
       'http://www.baidu.com',
       function () {
