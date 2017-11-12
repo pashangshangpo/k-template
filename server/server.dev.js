@@ -39,7 +39,7 @@ for (let key in entry) {
 		dateTime: Date.now()
 	}));
 
-	app.use(route.get(`/${key}.html`, cxt => {
+	app.use(route.get(`/${key}`, cxt => {
 	    cxt.body = curHtml;
 	}));
 }
