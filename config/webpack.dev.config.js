@@ -62,7 +62,7 @@ module.exports = {
             }
         }),
         new webpack.DllReferencePlugin({
-            manifest: require(resolve('.', 'dev/js/lib', "vendor-manifest.json"))
+            manifest: require(resolve('.', 'dev/js/dll', "vendor-manifest.json"))
         }),
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NamedModulesPlugin()

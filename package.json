@@ -43,7 +43,7 @@
   "scripts": {
     "create": "node ./server/create.js",
     "devdll": "webpack --config ./config/webpack.dll.dev.js",
-    "dev": "node ./server/server.dev.js 8087 ./api/api.js ./config/webpack.dev.config.js",
+    "dev": "node ./server/index.js dev",
     "destdll": "webpack --config ./config/webpack.dll.dest.js",
     "dest": "node ./server/server.dest.js config/webpack.dest.config.js",
     "test": "echo \"Error: no test specified\" && exit 1"
