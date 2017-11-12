@@ -2,6 +2,7 @@ const {join} = require('path');
 const {destPath} = require('./config');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const common = require('./webpack.common.js');
 
 module.exports = merge(common, {
@@ -11,6 +12,7 @@ module.exports = merge(common, {
       publicPath: '/'
   },
   plugins: [
+    new ExtractTextPlugin('css/styles.css'),
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         warnings: false,

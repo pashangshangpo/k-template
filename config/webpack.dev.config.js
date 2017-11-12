@@ -2,6 +2,7 @@ const {join} = require('path');
 const {devPath} = require('./config');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const common = require('./webpack.common.js');
 let entry = common.entry;
 
@@ -25,6 +26,7 @@ module.exports = merge(common, {
   },
   devtool: 'inline-source-map',
   plugins: [
+    new ExtractTextPlugin('css/styles.css'),
     new webpack.DefinePlugin({
       'process.env': {
         'NODE_ENV': "'production'"
