@@ -45,7 +45,7 @@
     "devdll": "webpack --config ./config/webpack.dll.dev.js",
     "dev": "node ./server/index.js dev",
     "destdll": "webpack --config ./config/webpack.dll.dest.js",
-    "dest": "node ./server/server.dest.js config/webpack.dest.config.js",
+    "dest": "node ./server/index.js dest",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

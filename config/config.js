@@ -26,6 +26,12 @@ const webpackDevDllPath = join(root, 'config/webpack.dll.dev.js');
 const apiPath = join(root, 'api/api.js');
 // devDllPath
 const devDllPath = join(root, 'dev/js/dll');
+// destDllPath
+const destDllPath = join(root, 'dest/js/dll');
+// devPath
+const devPath = join(root, 'dev');
+// destPath
+const destPath = join(root, 'dest');
 // port
 const port = 8087;
 
@@ -40,8 +46,11 @@ module.exports = {
   webpackDestPath,
   webpackDevDllPath,
   devDllPath,
+  destDllPath,
   port,
   devServerPath,
   destServerPath,
-  apiPath
+  apiPath,
+  devPath,
+  destPath
 };

@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const {resolve, join} = require('path');
 const {fileContentReplace, replace, appendCss, appendJs} = require('./util/util');
-let {devHtmlPath, injectPath, webpackDevPath} = require('../config/config');
+let {devHtmlPath, injectPath, webpackDevPath, devPath} = require('../config/config');
 const Koa = require('koa2');
 const app = new Koa();
 const route = require('koa-route');
@@ -34,7 +34,7 @@ for (let key of Object.keys(dev)) {
 // 替换模板
 for (let key in entry) {
 	let curHtml = '';
-	fs.writeFileSync(resolve('.', 'dev', `${key}.html`), curHtml = replace(html, {
+	fs.writeFileSync(join(devPath, `${key}.html`), curHtml = replace(html, {
 		entryName: key,
 		dateTime: Date.now()
 	}));
@@ -45,12 +45,12 @@ for (let key in entry) {
 }
 
 app.use(route.get('/', cxt => {
-	cxt.body = fs.readFileSync(resolve('.', 'dev/index.html')).toString();
+	cxt.body = fs.readFileSync(join(devPath, 'index.html')).toString();
 }));
 
 // 返回静态资源
 app.use(route.get('/dev/js/dll/vendor.dll.js', cxt => {
-    cxt.body = fs.readFileSync(resolve('.', 'dev/js/dll/vendor.dll.js')).toString();
+    cxt.body = fs.readFileSync(join(devPath, 'js/dll/vendor.dll.js')).toString();
 }));
 
 // 编译webpack

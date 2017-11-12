@@ -56,15 +56,15 @@ module.exports = {
         ]
     },
     plugins: [
-        new webpack.DefinePlugin({
-            'process.env': {
-                'NODE_ENV': 'development'
-            }
-        }),
-        new webpack.DllReferencePlugin({
-            manifest: require(resolve('.', 'dev/js/dll', "vendor-manifest.json"))
-        }),
-        new webpack.HotModuleReplacementPlugin(),
-        new webpack.NamedModulesPlugin()
+      new webpack.DefinePlugin({
+        'process.env': {
+          'NODE_ENV': "'production'"
+        }
+      }),
+      new webpack.DllReferencePlugin({
+          manifest: require(resolve('.', 'dev/js/dll', "vendor-manifest.json"))
+      }),
+      new webpack.HotModuleReplacementPlugin(),
+      new webpack.NamedModulesPlugin()
     ]
 };

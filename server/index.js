@@ -1,9 +1,9 @@
 const fs = require('fs');
 const shell = require('shelljs');
-let {devDllPath, devServerPath, port} = require('../config/config');
+let {devDllPath, devServerPath, port, destDllPath, destServerPath} = require('../config/config');
 const context = process.argv[2];
 let len = process.argv.length;
-let devContent = 'dev';
+let devContent = context;
 
 // 判断环境
 switch (len) {
@@ -23,16 +23,15 @@ switch (len) {
 
 console.log('正在为您检查相关配置...');
 
-// 判断是否有打包dll文件
-if (!fs.existsSync(devDllPath)) {
-  console.log('正在为您构建dll静态文件...');
-  shell.exec('npm run devdll');
-}
-
-console.log('正在为您启动本地服务...');
-
 switch (context) {
   case 'dev':
+    // 判断是否有打包dll文件
+    if (!fs.existsSync(devDllPath)) {
+      console.log('正在为您构建dll静态文件...');
+      shell.exec('npm run devdll');
+    }
+
+    console.log('正在为您启动本地服务...');
     shell.exec([
       'node',
       devServerPath,
@@ -41,5 +40,14 @@ switch (context) {
     ].join(' '));
     break;
   case 'dest':
+    console.log('正在为您进行打包...');
+    // 判断是否有打包dll文件
+    if (!fs.existsSync(destDllPath)) {
+      shell.exec('npm run destdll');
+    }
+    shell.exec([
+      'node',
+      destServerPath
+    ].join(' '));
     break;
 }

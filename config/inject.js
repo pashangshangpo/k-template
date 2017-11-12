@@ -3,7 +3,7 @@ module.exports = {
     css: [
     ],
     js: [
-      'dev/js/dll/vendor.dll.js?v=15.4',
+      'dev/js/dll/vendor.dll.js',
       'js/@entryName@.bundle.js',
       function (context) {
         let fn = '';
@@ -33,6 +33,13 @@ module.exports = {
     css: [
     ],
     js: [
+      'js/dll/vendor.dll.js',
+      'js/@entryName@.bundle.js',
+      function () {
+        return function () {
+          window.CONTEXT = 'dest';
+        }
+      }
     ]
   }
 };
