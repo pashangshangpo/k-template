@@ -11,11 +11,22 @@ module.exports = merge(common, {
       publicPath: '/'
   },
   plugins: [
-      new webpack.DefinePlugin({
-        'process.env.NODE_ENV': "'production'"
-      }),
-      new webpack.DllReferencePlugin({
-          manifest: require(join(destPath, 'js/dll', "vendor-manifest.json"))
-      })
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false,
+      },
+      output: {
+        comments: false,
+      },
+    }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'common'
+    }),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': "'production'"
+    }),
+    new webpack.DllReferencePlugin({
+      manifest: require(join(destPath, 'js/dll', "vendor-manifest.json"))
+    })
   ]
 });

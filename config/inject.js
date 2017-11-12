@@ -34,6 +34,7 @@ module.exports = {
     ],
     js: [
       'js/dll/vendor.dll.js',
+      'js/common.bundle.js',
       'js/@entryName@.bundle.js',
       function () {
         return function () {

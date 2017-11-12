@@ -18,21 +18,22 @@ for (let key in entry) {
 }
 
 module.exports = merge(common, {
-    output: {
-        filename: 'js/[name].bundle.js',
-        path: devPath,
-        publicPath: '/'
-    },
-    plugins: [
-      new webpack.DefinePlugin({
-        'process.env': {
-          'NODE_ENV': "'production'"
-        }
-      }),
-      new webpack.DllReferencePlugin({
-          manifest: require(join(devPath, 'js/dll', "vendor-manifest.json"))
-      }),
-      new webpack.HotModuleReplacementPlugin(),
-      new webpack.NamedModulesPlugin()
-    ]
+  output: {
+      filename: 'js/[name].bundle.js',
+      path: devPath,
+      publicPath: '/'
+  },
+  devtool: 'inline-source-map',
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {
+        'NODE_ENV': "'production'"
+      }
+    }),
+    new webpack.DllReferencePlugin({
+        manifest: require(join(devPath, 'js/dll', "vendor-manifest.json"))
+    }),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NamedModulesPlugin()
+  ]
 });
