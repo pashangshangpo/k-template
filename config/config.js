@@ -27,7 +27,7 @@ const apiPath = join(root, 'api/api.js');
 // devDllPath
 const devDllPath = join(root, 'dev/js/dll');
 // port
-const port = process.argv[3] || 8087;
+const port = 8087;
 
 module.exports = {
   root,

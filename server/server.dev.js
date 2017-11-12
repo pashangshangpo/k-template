@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const {resolve, join} = require('path');
 const {fileContentReplace, replace, appendCss, appendJs} = require('./util/util');
-let {devHtmlPath, injectPath, webpackDevPath, port} = require('../config/config');
+let {devHtmlPath, injectPath, webpackDevPath} = require('../config/config');
 const Koa = require('koa2');
 const app = new Koa();
 const route = require('koa-route');
@@ -12,6 +12,8 @@ const mockServer = require('./common/mockServer');
 const webpackConfig = require(webpackDevPath);
 const entry = webpackConfig.entry;
 const dev = require(injectPath).dev;
+const port = process.argv[2];
+const devContext = process.argv[3];
 
 // 模板内容
 let html = fs.readFileSync(devHtmlPath).toString();
@@ -24,7 +26,7 @@ for (let key of Object.keys(dev)) {
       html = appendCss(html, section);
     }
     else if (key === 'js') {
-      html = appendJs(html, section);
+      html = appendJs(html, section, devContext);
     }
   }
 }

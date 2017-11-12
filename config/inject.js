@@ -5,9 +5,27 @@ module.exports = {
     js: [
       'dev/js/dll/vendor.dll.js?v=15.4',
       'js/@entryName@.bundle.js',
-      function () {
-        window.aaa = 10;
-        console.log(window.aaa);
+      function (context) {
+        let fn = '';
+        switch (context) {
+          case 'dev':
+            fn = function () {
+              window.CONTEXT = 'dev';
+            };
+            break;
+          case 'qa':
+            fn = function () {
+              window.CONTEXT = 'qa';
+            };
+            break;
+          case 'dest':
+            fn = function () {
+              window.CONTEXT = 'dest';
+            };
+            break;
+        }
+
+        return fn;
       }
     ]
   },

@@ -48,14 +48,14 @@ module.exports = {
 
 	  return html.replace(/<head>([\s\S]*)<\/head>/, ['<head>$1', arr.join('\n'), '</head>'].join('\n'));
   },
-  appendJs: (html, js) => {
+  appendJs: (html, js, context) => {
 	  let arr = [];
 	  for (let item of js) {
 	    if (typeof item === 'string') {
 	      arr.push(`    <script src="${addQuery(item, {dateTime: '@dateTime@'})}"></script>`);
       }
       else {
-	      arr.push(`    <script>;(${item}());</script>`);
+	      arr.push(`    <script>;(${item(context)}());</script>`);
       }
     }
 
