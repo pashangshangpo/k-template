@@ -4,9 +4,6 @@ module.exports = {
   entry: {
     index: [
       './src/index.js'
-    ],
-    test: [
-      './src/test.js'
     ]
   },
   module: {

@@ -14,11 +14,12 @@ class Home extends Component {
 export default class extends Component {
 	render() {
 		return (
-			<HashRouter>
-				<div>
-					<Route exact path="/" component={Home} />
-				</div>
-			</HashRouter>
+      <HashRouter>
+        <div>
+          <Route exact path="/" render={() => <div>Index</div>} />
+          <Route exact path="/home" component={Home} />
+        </div>
+      </HashRouter>
 		);
 	};
 }
