@@ -1,69 +1,21 @@
-const {resolve, join} = require('path');
-const {postcssPath} = require('./config');
+const {join} = require('path');
+const {destPath} = require('./config');
 const webpack = require('webpack');
+const merge = require('webpack-merge');
+const common = require('./webpack.common.js');
 
-module.exports = {
-  entry: {
-      index: [
-          './src/index.js'
-      ],
-      test: [
-          './src/test.js'
-      ]
-  },
+module.exports = merge(common, {
   output: {
       filename: 'js/[name].bundle.js',
-      path: resolve('.', 'dest'),
+      path: destPath,
       publicPath: '/'
-  },
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        exclude: /(node_modules|bower_components)/,
-        use: ['babel-loader']
-      },
-      {
-        test: /\.css$/,
-        exclude: /(node_modules|bower_components)/,
-        use: [
-          'style-loader',
-          {
-            loader: 'css-loader',
-            options: {
-              importLoaders: 1
-            }
-          },
-          {
-            loader: 'postcss-loader',
-            options: {
-              config: {
-                path: postcssPath
-              }
-            }
-          }
-        ]
-      },
-      {
-        test: /\.(png|svg|jpg|gif)/,
-        use: [
-          {
-            loader: 'url-loader',
-            options: {
-              name: 'images/[name].[ext]',
-              limit: 8192
-            }
-          }
-        ]
-      }
-    ]
   },
   plugins: [
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': "'production'"
       }),
       new webpack.DllReferencePlugin({
-          manifest: require(resolve('.', 'dest/js/dll', "vendor-manifest.json"))
+          manifest: require(join(destPath, 'js/dll', "vendor-manifest.json"))
       })
   ]
-};
+});

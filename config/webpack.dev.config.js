@@ -1,59 +1,27 @@
-const {resolve, join} = require('path');
+const {join} = require('path');
+const {devPath} = require('./config');
 const webpack = require('webpack');
+const merge = require('webpack-merge');
+const common = require('./webpack.common.js');
+let entry = common.entry;
 
-module.exports = {
-    entry: {
-        index: [
-            'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=2000&reload=true',
-            './src/index.js'
-        ]
-    },
+// 自动添加webpack-hot-middleware
+let hotConfig = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=2000&reload=true';
+for (let key in entry) {
+  let section = entry[key];
+  if (Array.isArray(section)) {
+    section.unshift(hotConfig);
+  }
+  else {
+    entry[key] = [hotConfig, section];
+  }
+}
+
+module.exports = merge(common, {
     output: {
         filename: 'js/[name].bundle.js',
-        path: resolve('.', 'dev'),
+        path: devPath,
         publicPath: '/'
-    },
-    module: {
-        rules: [
-            {
-                test: /\.js$/,
-                exclude: /(node_modules|bower_components)/,
-                use: ['babel-loader']
-            },
-            {
-                test: /\.css$/,
-                exclude: /(node_modules|bower_components)/,
-                use: [
-                    'style-loader',
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            importLoaders: 1
-                        }
-                    },
-                    {
-                        loader: 'postcss-loader',
-                        options: {
-                            config: {
-                                path: './config'
-                            }
-                        }
-                    }
-                ]
-            },
-            {
-                test: /\.(png|svg|jpg|gif)/,
-                use: [
-                    {
-                        loader: 'url-loader',
-                        options: {
-                          name: 'images/[name].[ext]',
-                          limit: 8192
-                        }
-                    }
-                ]
-            }
-        ]
     },
     plugins: [
       new webpack.DefinePlugin({
@@ -62,9 +30,9 @@ module.exports = {
         }
       }),
       new webpack.DllReferencePlugin({
-          manifest: require(resolve('.', 'dev/js/dll', "vendor-manifest.json"))
+          manifest: require(join(devPath, 'js/dll', "vendor-manifest.json"))
       }),
       new webpack.HotModuleReplacementPlugin(),
       new webpack.NamedModulesPlugin()
     ]
-};
+});
