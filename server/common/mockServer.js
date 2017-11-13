@@ -170,11 +170,14 @@ module.exports = (app, server) => {
                 });
             }
             else {
+                let type = re.headers['content-type'];
+                let isTo = type.indexOf('json') !== -1 || type.indexOf('text') !== -1 || type.indexOf('xml') !== -1;
                 let data = [];
+
                 re.on('data', chunk => data.push(chunk));
                 re.on('end', () => {
                     resolve({
-                        postData: Buffer.concat(data).toString(),
+                        postData: isTo ? Buffer.concat(data).toString() : Buffer.concat(data),
                         formData: {}
                     });
                 });
