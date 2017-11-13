@@ -3,8 +3,8 @@
     ["env", {
       "useBuiltIns": true
     }],
-    "react",
-    ["stage-0"]
+    "stage-0",
+    "react"
   ],
-  "plugins": ["transform-decorators-legacy"]
+  "plugins": ["transform-decorators-legacy", "transform-runtime"]
 }
