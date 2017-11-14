@@ -16,7 +16,7 @@ const port = process.argv[2];
 const devContext = process.argv[3];
 
 // 模板内容
-let html = fs.readFileSync(devHtmlPath).toString();
+/*let html = fs.readFileSync(devHtmlPath).toString();
 
 // 向模板中注入代码
 for (let key of Object.keys(dev)) {
@@ -42,10 +42,14 @@ for (let key in entry) {
 	app.use(route.get(`/${key}`, cxt => {
 	    cxt.body = curHtml;
 	}));
-}
+}*/
 
 app.use(route.get('/', cxt => {
 	cxt.body = fs.readFileSync(join(devPath, 'index.html')).toString();
+}));
+
+app.use(route.get('/test', cxt => {
+  cxt.body = fs.readFileSync(join(devPath, 'test.html')).toString();
 }));
 
 // 返回静态资源
@@ -55,11 +59,11 @@ app.use(route.get('/dev/js/dll/vendor.dll.js', cxt => {
 
 // 编译webpack
 app.use(webpackMiddleware({
-    config: webpackConfig,
-    dev: {
-        publicPath: webpackConfig.output.publicPath,
-        noInfo: true
-    }
+  config: webpackConfig,
+  dev: {
+    publicPath: webpackConfig.output.publicPath,
+    noInfo: true
+  }
 }));
 
 // 服务

@@ -1,8 +1,10 @@
 const {join} = require('path');
-const {devPath} = require('./config');
+const {devPath, devHtmlPath} = require('./config');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin');
 const common = require('./webpack.common.js');
 let entry = common.entry;
 
@@ -26,6 +28,14 @@ module.exports = merge(common, {
   },
   devtool: 'inline-source-map',
   plugins: [
+    new HtmlWebpackPlugin({
+      filename: 'test.html',
+      template: devHtmlPath,
+      alwaysWriteToDisk: true
+    }),
+    new HtmlWebpackHarddiskPlugin({
+      outputPath: devPath
+    }),
     new ExtractTextPlugin('css/styles.css'),
     new webpack.DefinePlugin({
       'process.env': {
