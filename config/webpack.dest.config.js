@@ -8,6 +8,7 @@ const common = require('./webpack.common.js');
 module.exports = merge(common, {
   output: {
       filename: 'js/[name].bundle.js',
+      chunkFilename: 'js/[chunkhash].chunk.js',
       path: destPath,
       publicPath: '/'
   },

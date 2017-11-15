@@ -25,6 +25,7 @@ for (let key in entry) {
 module.exports = merge(common, {
   output: {
       filename: 'js/[name].bundle.js',
+      chunkFilename: 'js/[chunkhash].chunk.js',
       path: devPath,
       publicPath: '/'
   },
