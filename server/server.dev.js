@@ -62,7 +62,6 @@ let reloadHTML = () => {
       entryName: key,
       dateTime: Date.now()
     }));
-    fs.writeFileSync(join(devPath, `${key}.html`), curHtml = html);
 
     app.use(route.get(`/${key}`, cxt => {
         cxt.body = curHtml;
@@ -77,7 +76,7 @@ app.use(route.get('/', cxt => {
 }));
 
 // 返回静态资源
-app.use(route.get('/dev/js/dll/vendor.dll.js', cxt => {
+app.use(route.get('/dll/vendor.dll.js', cxt => {
     cxt.body = fs.readFileSync(join(devPath, 'js/dll/vendor.dll.js')).toString();
 }));
 

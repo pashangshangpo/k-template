@@ -3,9 +3,6 @@ module.exports = {
     css: [
     ],
     js: [
-      'dev/js/dll/vendor.dll.js',
-      'js/[naem].js',
-      'js/[chunkhash].chunk.js'
     ]
   },
   dest: {

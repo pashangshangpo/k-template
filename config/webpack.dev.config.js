@@ -31,7 +31,7 @@ module.exports = merge(common, {
   },
   devtool: 'inline-source-map',
   plugins: [
-    new ExtractTextPlugin('css/styles.css'),
+    new ExtractTextPlugin('css/index.css'),
     new webpack.DefinePlugin({
       'process.env': {
         'NODE_ENV': "'production'"
@@ -41,7 +41,7 @@ module.exports = merge(common, {
       name: 'common'
     }),
     new webpack.DllReferencePlugin({
-        manifest: require(join(devPath, 'js/dll', "vendor-manifest.json"))
+        manifest: require(join(devPath, 'js/dll', 'vendor-manifest.json'))
     }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin()
