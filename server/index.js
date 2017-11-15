@@ -1,6 +1,13 @@
 const fs = require('fs');
 const shell = require('shelljs');
-let {devDllPath, devServerPath, port, destDllPath, destServerPath} = require('../config/config');
+let {
+  destPath, 
+  devDllPath, 
+  destDllPath, 
+  port, 
+  devServerPath, 
+  destServerPath
+} = require('../config/config');
 const context = process.argv[2];
 let len = process.argv.length;
 let devContent = context;
@@ -40,11 +47,12 @@ switch (context) {
     ].join(' '));
     break;
   case 'dest':
+    console.log('正在删除废弃数据...');
+    shell.rm('-rf', destPath);
+
     console.log('正在为您进行打包...');
-    // 判断是否有打包dll文件
-    if (!fs.existsSync(destDllPath)) {
-      shell.exec('npm run destdll');
-    }
+    shell.exec('npm run destdll');
+
     shell.exec([
       'node',
       destServerPath
