@@ -1,7 +1,7 @@
 const webpack = require('webpack');
-const {resolve, join, dllMapDest} = require('path');
+const {resolve, join} = require('path');
 const AssetsPlugin = require('assets-webpack-plugin');
-const {destDllPath} = require('./config');
+const {destDllPath, dllMapDestOut} = require('./config');
 const library = '[name]_[chunkhash]';
 
 module.exports = {
@@ -33,7 +33,7 @@ module.exports = {
     }),
     new AssetsPlugin({
       update: true,
-      filename: dllMapDest, 
+      filename: dllMapDestOut, 
       prettyPrint: true
     })
   ]

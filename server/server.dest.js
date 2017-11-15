@@ -6,7 +6,7 @@ const {
   webpackDestPath, 
   destHtmlPath, 
   destPath,
-  destDllPath,
+  dllPath,
   injectPath,
   indexMapDest,
   dllMapDest
@@ -45,9 +45,10 @@ compiler.run((err, status) => {
     // 替换模板
     for (let key in entry) {
       fs.writeFileSync(join(destPath, `${key}.html`), replace(html, {
+        indexCssPath: indexMap.index.css,
         indexJsPath: indexMap.index.js,
         commonJsPath: indexMap.common.js,
-        dllJsPath: join(destDllPath, dllMap.vendor.js),
+        dllJsPath: join(dllPath, dllMap.vendor.js),
         entryName: key,
         dateTime: Date.now()
       }));

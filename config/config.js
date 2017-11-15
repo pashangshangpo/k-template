@@ -24,20 +24,30 @@ const destServerPath = join(root, 'server/server.dest.js');
 const webpackDevDllPath = join(root, 'config/webpack.dll.dev.js');
 // apiPath
 const apiPath = join(root, 'api/api.js');
-// devDllPath
-const devDllPath = join(root, 'dev/js/dll');
-// destDllPath
-const destDllPath = join(root, 'dest/js/dll');
+
 // devPath
 const devPath = join(root, 'dev');
 // destPath
 const destPath = join(root, 'dest');
+// dllPath
+const dllPath = '/js/dll';
+// devDllPath
+const devDllPath = join(devPath, dllPath);
+// destDllPath
+const destDllPath = join(destPath, dllPath);
 
 // indexMap
-const indexMapDest = join(destPath, 'index.map.json');
-
+const indexMap = 'index.map.json';
 // dllMap
-const dllMapDest = join(destPath, 'dll.map.json');
+const dllMap = 'dll.map.json';
+// indexMap
+const indexMapDest = join(destPath, indexMap);
+// dllMapDest
+const dllMapDest = join(destPath, dllMap);
+// indexMapDestOut
+const indexMapDestOut = join('./dest', indexMap);
+// dllMapDestOut
+const dllMapDestOut = join('./dest', dllMap);
 
 // port
 const port = 8087;
@@ -61,5 +71,8 @@ module.exports = {
   devPath,
   destPath,
   indexMapDest,
-  dllMapDest
+  dllMapDest,
+  dllPath,
+  indexMapDestOut,
+  dllMapDestOut
 };
