@@ -4,6 +4,7 @@ module.exports = {
     ],
     js: [
       'dev/js/dll/vendor.dll.js',
+      'js/common.bundle.js',
       'js/@entryName@.bundle.js'
     ]
   },

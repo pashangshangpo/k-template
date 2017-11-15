@@ -36,6 +36,9 @@ module.exports = merge(common, {
         'NODE_ENV': "'production'"
       }
     }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'common'
+    }),
     new webpack.DllReferencePlugin({
         manifest: require(join(devPath, 'js/dll', "vendor-manifest.json"))
     }),
