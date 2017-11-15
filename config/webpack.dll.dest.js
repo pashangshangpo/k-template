@@ -1,14 +1,15 @@
 const webpack = require('webpack');
-const {resolve, join} = require('path');
+const {resolve, join, dllMapDest} = require('path');
+const AssetsPlugin = require('assets-webpack-plugin');
 const {destDllPath} = require('./config');
-const library = '[name]_[hash]';
+const library = '[name]_[chunkhash]';
 
 module.exports = {
   entry: {
     vendor: ['react', 'react-dom', 'react-router', 'react-router-dom', 'mobx', 'mobx-react']
   },
   output: {
-    filename: '[name].dll.js',
+    filename: '[chunkhash].dll.js',
     path: destDllPath,
     library
   },
@@ -27,8 +28,13 @@ module.exports = {
       }
     }),
     new webpack.DllPlugin({
-      path: join(destDllPath, '[name]-manifest.json'),
+      path: join(destDllPath, '[chunkhash].manifest.json'),
       name: library
+    }),
+    new AssetsPlugin({
+      update: true,
+      filename: dllMapDest, 
+      prettyPrint: true
     })
   ]
 };

@@ -62,6 +62,7 @@ let reloadHTML = () => {
       entryName: key,
       dateTime: Date.now()
     }));
+    fs.writeFileSync(join(devPath, `${key}.html`), curHtml = html);
 
     app.use(route.get(`/${key}`, cxt => {
         cxt.body = curHtml;

@@ -32,6 +32,13 @@ const destDllPath = join(root, 'dest/js/dll');
 const devPath = join(root, 'dev');
 // destPath
 const destPath = join(root, 'dest');
+
+// indexMap
+const indexMapDest = join(destPath, 'index.map.json');
+
+// dllMap
+const dllMapDest = join(destPath, 'dll.map.json');
+
 // port
 const port = 8087;
 
@@ -52,5 +59,7 @@ module.exports = {
   destServerPath,
   apiPath,
   devPath,
-  destPath
+  destPath,
+  indexMapDest,
+  dllMapDest
 };

@@ -24,9 +24,9 @@ for (let key in entry) {
 
 module.exports = merge(common, {
   output: {
-      filename: 'js/[name].bundle.js',
-      chunkFilename: 'js/[chunkhash].chunk.js',
-      path: devPath,
+      filename: '[name].js',
+      chunkFilename: '[chunkhash].chunk.js',
+      path: join(devPath, 'js'),
       publicPath: '/'
   },
   devtool: 'inline-source-map',
