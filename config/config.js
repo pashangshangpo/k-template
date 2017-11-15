@@ -49,6 +49,11 @@ const indexMapDestOut = join('./dest', indexMap);
 // dllMapDestOut
 const dllMapDestOut = join('./dest', dllMap);
 
+// tempPath
+const tempPath = join(root, 'temp');
+// fileTimePath
+const fileTimePath = join(tempPath, 'filetime.json');
+
 // port
 const port = 8087;
 
@@ -74,5 +79,7 @@ module.exports = {
   dllMapDest,
   dllPath,
   indexMapDestOut,
-  dllMapDestOut
+  dllMapDestOut,
+  tempPath,
+  fileTimePath
 };

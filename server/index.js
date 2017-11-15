@@ -1,12 +1,15 @@
 const fs = require('fs');
+const {join} = require('path');
 const shell = require('shelljs');
 let {
   destPath, 
-  devDllPath, 
-  destDllPath, 
-  port, 
-  devServerPath, 
-  destServerPath
+  devDllPath,
+  webpackDevDllPath,
+  port,
+  devServerPath,
+  destServerPath,
+  tempPath,
+  fileTimePath
 } = require('../config/config');
 const context = process.argv[2];
 let len = process.argv.length;
@@ -32,10 +35,27 @@ console.log('正在为您检查相关配置...');
 
 switch (context) {
   case 'dev':
-    // 判断是否有打包dll文件
-    if (!fs.existsSync(devDllPath)) {
-      console.log('正在为您构建dll静态文件...');
+    // 判断是否需要打包dll文件
+    if (fs.existsSync(fileTimePath)) {
+      let fileTime = require(fileTimePath);
+      let devDllTime = fs.lstatSync(webpackDevDllPath).mtimeMs;
+
+      if (devDllTime > fileTime.devDllTime) {
+        console.log('正在为您重新构建dll文件...');
+        shell.exec('npm run devdll');
+
+        fileTime.devDllTime = devDllTime;
+        fs.writeFileSync(fileTimePath, JSON.stringify(fileTime));
+      }
+    }
+    else {
+      console.log('正在为您构建dll文件...');
       shell.exec('npm run devdll');
+
+      fs.mkdirSync(tempPath);
+      fs.writeFileSync(fileTimePath, JSON.stringify({
+        devDllTime: fs.lstatSync(webpackDevDllPath).mtimeMs
+      }));
     }
 
     console.log('正在为您启动本地服务...');
