@@ -55,5 +55,8 @@ compiler.run((err, status) => {
     }
 
 		console.log('构建完成');
+
+    fs.unlinkSync(indexMapDest);
+    fs.unlinkSync(dllMapDest);
 	}
 });
