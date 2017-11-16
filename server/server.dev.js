@@ -21,7 +21,12 @@ let middleware = webpackMiddleware({
   config: webpackConfig,
   dev: {
     publicPath: webpackConfig.output.publicPath,
-    noInfo: true
+    noInfo: true,
+    reload: false
+  },
+  hot: {
+    publicPath: webpackConfig.output.publicPath,
+    reload: false
   }
 });
 
