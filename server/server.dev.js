@@ -7,6 +7,7 @@ const Koa = require('koa2');
 const app = new Koa();
 const route = require('koa-route');
 const webpackMiddleware = require('koa-webpack');
+const webpack = require('webpack');
 const chokidar = require('chokidar');
 const mockServer = require('./common/mockServer');
 
@@ -17,16 +18,18 @@ const port = process.argv[2];
 const devContext = process.argv[3];
 
 // 编译webpack
+let compiler = webpack(webpackConfig);
+
 let middleware = webpackMiddleware({
-  config: webpackConfig,
+  compiler: compiler,
   dev: {
     publicPath: webpackConfig.output.publicPath,
     noInfo: true,
-    reload: false
+    hot: true
   },
   hot: {
     publicPath: webpackConfig.output.publicPath,
-    reload: false
+    hot: true
   }
 });
 

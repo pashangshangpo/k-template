@@ -1,13 +1,11 @@
 const webpack = require('webpack');
+const merge = require('webpack-merge');
 const {resolve, join} = require('path');
 const AssetsPlugin = require('assets-webpack-plugin');
-const {destDllPath, dllMapDestOut} = require('./config');
+const {destDllPath, webpackDllCommonPath, dllMapDestOut} = require('./config');
 const library = '[name]_[chunkhash]';
 
-module.exports = {
-  entry: {
-    vendor: ['react', 'react-dom', 'react-router', 'react-router-dom', 'mobx', 'mobx-react']
-  },
+module.exports = merge(require(webpackDllCommonPath), {
   output: {
     filename: '[chunkhash].dll.js',
     path: destDllPath,
@@ -37,4 +35,4 @@ module.exports = {
       prettyPrint: true
     })
   ]
-};
+});
