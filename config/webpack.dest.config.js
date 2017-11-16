@@ -1,5 +1,5 @@
 const {join} = require('path');
-const {destPath, destDllPath, indexMapDestOut} = require('./config');
+const {destPath, destDllPath, postcssPath, indexMapDestOut} = require('./config');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');

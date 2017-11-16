@@ -2,6 +2,7 @@ const fs = require('fs');
 const {resolve, join} = require('path');
 const {appendCss, appendJs, replace} = require('./util/util');
 const webpack = require('webpack');
+const minify = require('html-minifier').minify;
 const {
   webpackDestPath, 
   destHtmlPath, 
@@ -44,13 +45,24 @@ compiler.run((err, status) => {
 
     // 替换模板
     for (let key in entry) {
-      fs.writeFileSync(join(destPath, `${key}.html`), replace(html, {
+      fs.writeFileSync(join(destPath, `${key}.html`), minify(replace(html, {
         indexCssPath: indexMap.index.css,
         indexJsPath: indexMap.index.js,
         commonJsPath: indexMap.common.js,
         dllJsPath: join(dllPath, dllMap.vendor.js),
         entryName: key,
         dateTime: Date.now()
+      }), {
+        collapseBooleanAttributes: true,
+        collapseInlineTagWhitespace: true,
+        collapseWhitespace: true,
+        minifyCSS: true,
+        minifyJS: true,
+        minifyURLs: true,
+        removeAttributeQuotes: true,
+        removeComments: true,
+        removeScriptTypeAttributes: true,
+        removeStyleLinkTypeAttributes: true
       }));
     }
 
