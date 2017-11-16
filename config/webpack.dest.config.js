@@ -9,6 +9,33 @@ const dllMap = require(join(destPath, 'dll.map.json'));
 const manifestChunkhash = dllMap.vendor.js.substr(0, dllMap.vendor.js.lastIndexOf('.dll.js'));
 
 module.exports = merge(common, {
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        exclude: /(node_modules|bower_components)/,
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: [
+            {
+              loader: 'css-loader',
+              options: {
+                importLoaders: 1
+              }
+            },
+            {
+              loader: 'postcss-loader',
+              options: {
+                config: {
+                  path: postcssPath
+                }
+              }
+            }
+          ]
+        })
+      }
+    ]
+  },
   output: {
       filename: 'js/[name].[chunkhash].js',
       chunkFilename: 'js/[chunkhash].chunk.js',

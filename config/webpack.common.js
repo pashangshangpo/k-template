@@ -15,29 +15,6 @@ module.exports = {
         use: ['babel-loader']
       },
       {
-        test: /\.css$/,
-        exclude: /(node_modules|bower_components)/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: [
-            {
-              loader: 'css-loader',
-              options: {
-                importLoaders: 1
-              }
-            },
-            {
-              loader: 'postcss-loader',
-              options: {
-                config: {
-                  path: postcssPath
-                }
-              }
-            }
-          ]
-        })
-      },
-      {
         test: /\.(png|svg|jpg|gif)/,
         use: [
           {

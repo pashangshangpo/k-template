@@ -1,23 +1,30 @@
 const {join} = require('path');
 const {devPath, devHtmlPath, postcssPath} = require('./config');
 const webpack = require('webpack');
+const merge = require('webpack-merge');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const common = require('./webpack.common.js');
+let entry = common.entry;
 
-module.exports = {
-  entry: {
-    index: [
-      'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=2000&reload=true',
-      './server/dev.client',
-      './src/index.js'
-    ]
-  },
+// 自动添加webpack-hot-middleware
+let hotConfig = [
+  'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=2000&reload=true',
+  './server/dev.client'
+];
+
+for (let key in entry) {
+  let section = entry[key];
+  if (Array.isArray(section)) {
+    section.unshift.apply(section, hotConfig);
+  }
+  else {
+    entry[key] = hotConfig.concat([section]);
+  }
+}
+
+module.exports = merge(common, {
   module: {
     rules: [
-      {
-        test: /\.js$/,
-        exclude: /(node_modules|bower_components)/,
-        use: ['babel-loader']
-      },
       {
         test: /\.css$/,
         exclude: /(node_modules|bower_components)/,
@@ -40,24 +47,12 @@ module.exports = {
             }
           ]
         }))
-      },
-      {
-        test: /\.(png|svg|jpg|gif)/,
-        use: [
-          {
-            loader: 'url-loader',
-            options: {
-              name: 'images/[name].[ext]',
-              limit: 8192
-            }
-          }
-        ]
       }
     ]
   },
   output: {
       filename: '[name].js',
-      // 代码分割时的文件名
+      // 代码分割时的
       chunkFilename: '[chunkhash].chunk.js',
       path: join(devPath, 'js'),
       publicPath: '/'
@@ -84,4 +79,4 @@ module.exports = {
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin()
   ]
-};
+});
