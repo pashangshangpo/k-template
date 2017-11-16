@@ -8,8 +8,8 @@ let entry = common.entry;
 
 // 自动添加webpack-hot-middleware
 let hotConfig = [
-  './server/dev.client',
-  'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=2000&reload=true'
+  'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=2000&reload=true',
+  './server/dev.client'
 ];
 
 for (let key in entry) {
