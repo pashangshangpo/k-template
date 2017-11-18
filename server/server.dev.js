@@ -25,12 +25,7 @@ let middleware = webpackMiddleware({
   compiler: compiler,
   dev: {
     publicPath: webpackConfig.output.publicPath,
-    noInfo: true,
-    hot: true
-  },
-  hot: {
-    publicPath: webpackConfig.output.publicPath,
-    hot: true
+    noInfo: true
   }
 });
 

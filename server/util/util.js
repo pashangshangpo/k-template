@@ -59,11 +59,11 @@ module.exports = {
 	      arr.push(`    <script src="${addQuery(item, {dateTime: '@dateTime@'})}"></script>`);
       }
       else {
-	      arr.push(`    <script>;(${item(context)}());</script>`);
+	      arr.push(`    <script>;(${item}('${context}'));</script>`);
       }
     }
 
-    return html.replace(/<body>([\s\S]*)<\/body>/, ['<body>$1', arr.join('\n'), '</body>'].join('\n'));
+    return html.replace(/<head>([\s\S]*)<\/head>/, ['<head>$1', arr.join('\n'), '</head>'].join('\n'));
   },
   // 获取本机ip地址
   getIp: () => {
