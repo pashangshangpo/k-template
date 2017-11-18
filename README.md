@@ -10,9 +10,9 @@
 ```
 git clone
 cd k-template
-npm run create 项目名
+yarn create 项目名
 cd ../项目名
-npm run [dev, dest] [port|8087] [环境上下文]
+yarn [dev, dest] [port|8087] [环境上下文]
 ```
 
 ### 环境上下文

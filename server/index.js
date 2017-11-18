@@ -68,7 +68,7 @@ switch (context) {
 
       if (devDllTime > fileTime.devDllTime) {
         console.log('正在为您重新构建dll文件...');
-        shell.exec('npm run devdll');
+        shell.exec('yarn run devdll');
 
         fileTime.devDllTime = devDllTime;
         fs.writeFileSync(fileTimePath, JSON.stringify(fileTime));
@@ -76,7 +76,7 @@ switch (context) {
     }
     else {
       console.log('正在为您构建dll文件...');
-      shell.exec('npm run devdll');
+      shell.exec('yarn run devdll');
 
       fs.mkdirSync(tempPath);
       fs.writeFileSync(fileTimePath, JSON.stringify({
@@ -97,7 +97,7 @@ switch (context) {
     shell.rm('-rf', destPath);
 
     console.log('正在为您进行打包...');
-    shell.exec('npm run destdll');
+    shell.exec('yarn run destdll');
 
     shell.exec([
       'node',
