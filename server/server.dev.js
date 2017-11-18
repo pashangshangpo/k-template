@@ -5,7 +5,8 @@ const {fileContentReplace, replace, appendCss, appendJs, getIp} = require('./uti
 let {devHtmlPath, injectPath, webpackDevPath, devPath} = require('../config/config');
 const Koa = require('koa2');
 const app = new Koa();
-const route = require('koa-route');
+const Router = require('koa-router');
+const router = new Router();
 const webpackMiddleware = require('koa-webpack');
 const webpack = require('webpack');
 const chokidar = require('chokidar');
@@ -71,23 +72,24 @@ let reloadHTML = () => {
       dateTime: Date.now()
     }));
 
-    app.use(route.get(`/${key}`, cxt => {
-        cxt.body = curHtml;
-    }));
+    router.get(`/${key}`, cxt => {
+      cxt.body = curHtml;
+    });
   }
 };
 
 reloadHTML();
 
-app.use(route.get('/', cxt => {
-	cxt.body = fs.readFileSync(join(devPath, 'index.html')).toString();
-}));
-
 // 返回静态资源
-app.use(route.get('/dll/vendor.dll.js', cxt => {
-    cxt.body = fs.readFileSync(join(devPath, 'js/dll/vendor.dll.js')).toString();
-}));
+router.get('/', cxt => {
+  cxt.body = fs.readFileSync(join(devPath, 'index.html')).toString();
+});
 
+router.get('/dll/vendor.dll.js', cxt => {
+  cxt.body = fs.readFileSync(join(devPath, 'js/dll/vendor.dll.js')).toString();
+});
+
+app.use(router.routes());
 app.use(middleware);
 
 // 服务
