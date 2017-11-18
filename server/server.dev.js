@@ -1,7 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const {resolve, join} = require('path');
-const {fileContentReplace, replace, appendCss, appendJs} = require('./util/util');
+const {fileContentReplace, replace, appendCss, appendJs, getIp} = require('./util/util');
 let {devHtmlPath, injectPath, webpackDevPath, devPath} = require('../config/config');
 const Koa = require('koa2');
 const app = new Koa();
@@ -96,6 +96,7 @@ let server = http.createServer(app.callback());
 mockServer(app, server);
 
 server.listen(port, () => {
-    console.log(`server => http://localhost:${port}`);
-    console.log(`See request info => http://localhost:${port}/debug`);
+  let ip = getIp();
+  console.log(`server => http://${ip}:${port}`);
+  console.log(`See request info => http://${ip}:${port}/debug`);
 });
