@@ -14,7 +14,6 @@ const mockServer = require('./common/mockServer');
 
 const webpackConfig = require(webpackDevPath);
 const entry = webpackConfig.entry;
-const dev = require(injectPath).dev;
 const port = process.argv[2];
 const devContext = process.argv[3];
 
@@ -25,12 +24,13 @@ let middleware = webpackMiddleware({
   compiler: compiler,
   dev: {
     publicPath: webpackConfig.output.publicPath,
-    noInfo: true
+    noInfo: true,
+    hot: true
   }
 });
 
 let timer = null;
-chokidar.watch(devHtmlPath).on('all', (event, path) => {
+chokidar.watch([devHtmlPath, injectPath]).on('all', (event, path) => {
   clearTimeout(timer);
 
   if (event === 'change') {
@@ -43,6 +43,10 @@ chokidar.watch(devHtmlPath).on('all', (event, path) => {
 });
 
 let reloadHTML = () => {
+  // 防止缓存
+  delete require.cache[injectPath];
+  const dev = require(injectPath).dev;
+
   // 模板内容
   let html = fs.readFileSync(devHtmlPath).toString();
 
