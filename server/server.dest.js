@@ -15,6 +15,7 @@ const {
 const webpackConfig = require(webpackDestPath);
 const entry = webpackConfig.entry;
 const dest = require(injectPath).dest;
+const context = process.argv[2];
 
 // 构建
 const compiler = webpack(webpackConfig);
@@ -38,7 +39,7 @@ compiler.run((err, status) => {
           html = appendCss(html, section);
         }
         else if (key === 'js') {
-          html = appendJs(html, section);
+          html = appendJs(html, section, context);
         }
       }
     }

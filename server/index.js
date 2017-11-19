@@ -101,7 +101,8 @@ switch (context) {
 
     shell.exec([
       'node',
-      destServerPath
+      destServerPath,
+      devContent
     ].join(' '));
     break;
 }
