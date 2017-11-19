@@ -10,9 +10,6 @@ module.exports = (app, server) => {
   const Router = require('koa-router');
   const router = new Router();
   const prettyHtml = require('json-pretty-html').default;
-  const api = require(apiPath);
-  const apiConfig = api.config;
-  const apiRequest = api.request;
   const Mock = require('mockjs');
   const io = require('socket.io')(server);
 
@@ -241,6 +238,11 @@ module.exports = (app, server) => {
 
   // 转发API请求
   router.all('/api/*', async cxt => {
+    delete require.cache[apiPath];
+    const api = require(apiPath);
+    const apiConfig = api.config;
+    const apiRequest = api.request;
+
     let req = cxt.req;
     let res = cxt.res;
     let koaReq = cxt.request;
