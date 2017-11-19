@@ -25,7 +25,15 @@ module.exports = (app, server) => {
   // emitData
   let emitData = () => {
       if (socket) {
-          socket.emit('data', results.data);
+        let data = results.data;
+        data = data.map(item => {
+          item.postData = toHtml(item.postData);
+          item.formData = toHtml(item.formData);
+          item.resultData = toHtml(item.resultData);
+
+          return item;
+        });
+        socket.emit('data', data);
       }
   };
 
@@ -69,9 +77,9 @@ module.exports = (app, server) => {
                   method: req.method
               },
               query: querystring.parse(url.query),
-              postData: toHtml(postData),
-              formData: toHtml(formData),
-              resultData: toHtml(res)
+              postData: postData,
+              formData: formData,
+              resultData: res
           });
       },
       clear: () => {
