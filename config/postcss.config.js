@@ -3,7 +3,8 @@ module.exports = ({ file, options, env }) => {
     require('postcss-cssnext')({
       warnForDuplicates: false,
       warnForDeprecations: false
-    })
+    }),
+    require('postcss-import')()
   ];
 
   if (process.env.npm_lifecycle_event === 'dev') {
