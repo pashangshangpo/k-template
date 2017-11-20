@@ -87,5 +87,9 @@ module.exports = {
     }
 
     return ipStr
+  },
+  // 判断类型
+  type: el => {
+	  return el.constructor.name;
   }
 };

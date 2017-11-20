@@ -1,10 +1,21 @@
 const {join} = require('path');
-const {devPath, devHtmlPath, postcssPath} = require('./config');
+let {root, devPath, devHtmlPath, postcssPath, kConfigPath} = require('./config');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const kConfig = require(kConfigPath);
 const common = require('./webpack.common.js');
 let entry = common.entry;
+// 上下文
+const context = process.argv[3];
+
+let outputPath = kConfig.env && kConfig.env[context] && kConfig.env[context].outputPath;
+if (outputPath) {
+  devPath = join(root, outputPath);
+}
+
+let publicPath = kConfig.env && kConfig.env[context] && kConfig.env[context].publicPath;
+
 
 // 自动添加webpack-hot-middleware
 let hotConfig = [
@@ -54,8 +65,8 @@ module.exports = merge(common, {
       filename: '[name].js',
       // 代码分割时的
       chunkFilename: '[chunkhash].chunk.js',
-      path: join(devPath, 'js'),
-      publicPath: '/'
+      path: devPath,
+      publicPath: publicPath || '/'
   },
   devtool: 'inline-source-map',
   plugins: [

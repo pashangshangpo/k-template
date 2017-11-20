@@ -33,7 +33,7 @@ const apiPath = join(root, 'api/api.js');
 // devPath
 const devPath = join(root, 'dev');
 // destPath
-const destPath = join(root, 'dest');
+const destPath = join(root, 'dist/dest');
 // dllPath
 const dllPath = '/js/dll';
 // devDllPath
@@ -50,14 +50,17 @@ const indexMapDest = join(destPath, indexMap);
 // dllMapDest
 const dllMapDest = join(destPath, dllMap);
 // indexMapDestOut
-const indexMapDestOut = join('./dest', indexMap);
+const indexMapDestOut = join('./dist/dest', indexMap);
 // dllMapDestOut
-const dllMapDestOut = join('./dest', dllMap);
+const dllMapDestOut = join('./dist/dest', dllMap);
 
 // tempPath
 const tempPath = join(root, 'temp');
 // fileTimePath
 const fileTimePath = join(tempPath, 'filetime.json');
+
+// k.config.js
+const kConfigPath = join(root, 'k.config.js');
 
 // port
 const port = 8087;
@@ -88,5 +91,6 @@ module.exports = {
   indexMapDestOut,
   dllMapDestOut,
   tempPath,
-  fileTimePath
+  fileTimePath,
+  kConfigPath
 };
