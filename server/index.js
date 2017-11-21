@@ -62,27 +62,30 @@ console.log('正在为您检查相关配置...');
 switch (context) {
   case 'dev':
     // 判断是否需要打包dll文件
-    if (fs.existsSync(fileTimePath)) {
-      let fileTime = require(fileTimePath);
-      let devDllTime = fs.lstatSync(webpackDevDllPath).mtimeMs;
+    // if (fs.existsSync(fileTimePath)) {
+    //   let fileTime = require(fileTimePath);
+    //   let devDllTime = fs.lstatSync(webpackDevDllPath).mtimeMs;
 
-      if (devDllTime > fileTime.devDllTime) {
-        console.log('正在为您重新构建dll文件...');
-        shell.exec('yarn run devdll');
+    //   if (devDllTime > fileTime.devDllTime) {
+    //     console.log('正在为您重新构建dll文件...');
+    //     // shell.exec('yarn run devdll');
+    //     shell.exec(['webpack --config ./config/webpack.dll.dev.js', devContent].join(' '));
+        
+    //     fileTime.devDllTime = devDllTime;
+    //     fs.writeFileSync(fileTimePath, JSON.stringify(fileTime));
+    //   }
+    // }
+    // else {
+    //   console.log('正在为您构建dll文件...');
+    //   // shell.exec('yarn run devdll');
+    //   shell.exec(['webpack --config ./config/webpack.dll.dev.js', devContent].join(' '));      
 
-        fileTime.devDllTime = devDllTime;
-        fs.writeFileSync(fileTimePath, JSON.stringify(fileTime));
-      }
-    }
-    else {
-      console.log('正在为您构建dll文件...');
-      shell.exec('yarn run devdll');
-
-      fs.mkdirSync(tempPath);
-      fs.writeFileSync(fileTimePath, JSON.stringify({
-        devDllTime: fs.lstatSync(webpackDevDllPath).mtimeMs
-      }));
-    }
+    //   fs.mkdirSync(tempPath);
+    //   fs.writeFileSync(fileTimePath, JSON.stringify({
+    //     devDllTime: fs.lstatSync(webpackDevDllPath).mtimeMs
+    //   }));
+    // }
+    shell.exec(['webpack --config', webpackDevDllPath, `--env.context=${devContent}`].join(' '));
 
     console.log('正在为您启动本地服务...');
     shell.exec([

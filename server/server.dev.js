@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const {resolve, join} = require('path');
 const {fileContentReplace, replace, appendCss, appendJs, getIp} = require('./util/util');
-let {templatePath, injectPath, webpackDevPath, devPath, kConfigPath} = require('../config/config');
+let {root, templatePath, injectPath, webpackDevPath, kConfigPath} = require('../config/config');
 const Koa = require('koa2');
 const app = new Koa();
 const Router = require('koa-router');
@@ -13,10 +13,15 @@ const merge = require('webpack-merge');
 const chokidar = require('chokidar');
 const mockServer = require('./common/mockServer');
 
-const webpackConfig = require(webpackDevPath);
-const entry = webpackConfig.entry;
 const port = process.argv[2];
 const devContext = process.argv[3];
+
+const webpackConfig = require(webpackDevPath);
+const entry = webpackConfig.entry;
+const kConfig = require(kConfigPath);
+const devConfig = kConfig.env[devContext];
+const {outputPath} = devConfig;
+const devPath = join(root, outputPath);
 
 // 编译webpack
 let compiler = webpack(webpackConfig);
