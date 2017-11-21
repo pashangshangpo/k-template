@@ -2,7 +2,7 @@ const webpack = require('webpack');
 const merge = require('webpack-merge');
 const {join} = require('path');
 const AssetsPlugin = require('assets-webpack-plugin');
-const {root, webpackDllCommonPath, dllMapDestOut, kConfigPath, dllPath, dllMap} = require('./config');
+const {root, webpackDllCommonPath, kConfigPath, dllPath, dllMap} = require('./config');
 const kConfig = require(kConfigPath);
 const library = '[name]_[chunkhash]';
 

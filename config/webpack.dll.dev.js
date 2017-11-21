@@ -5,7 +5,6 @@ const {root, dllPath, kConfigPath, webpackDllCommonPath} = require('./config');
 const kConfig = require(kConfigPath);
 const library = '[name]_[hash]';
 
-// --env.context=
 module.exports = env => {
   // 上下文
   const context = env.context;

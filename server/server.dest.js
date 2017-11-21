@@ -7,9 +7,7 @@ const {
   root,
   webpackDestPath, 
   templatePath, 
-  destPath,
   dllPath,
-  injectPath,
   indexMap,
   dllMap,
   kConfigPath

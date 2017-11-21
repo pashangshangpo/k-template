@@ -1,5 +1,5 @@
 const {join} = require('path');
-const {root, destPath, destDllPath, dllPath, postcssPath, indexMapDestOut, indexMap, dllMap, kConfigPath} = require('./config');
+const {root, dllPath, postcssPath, indexMap, dllMap, kConfigPath} = require('./config');
 const kConfig = require(kConfigPath);
 const webpack = require('webpack');
 const merge = require('webpack-merge');
@@ -10,7 +10,6 @@ const common = require('./webpack.common.js');
 // 上下文
 const context = process.argv[2];
 let {outputPath, publicPath} = kConfig.env[context];
-// outputPath = join(root, outputPath);
 
 const dllMapConfig = require(join(root, outputPath, dllMap));
 const manifestChunkhash = dllMapConfig.vendor.js.substr(0, dllMapConfig.vendor.js.lastIndexOf('.dll.js'));

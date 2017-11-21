@@ -8,7 +8,6 @@
     "new": "node ./server/create.js",
     "devdll": "webpack --config ./config/webpack.dll.dev.js",
     "server": "node ./server/index.js dev",
-    "destdll": "webpack --config ./config/webpack.dll.dest.js",
     "build": "node ./server/index.js dest",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

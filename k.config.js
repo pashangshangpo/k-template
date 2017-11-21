@@ -5,6 +5,10 @@ module.exports = {
     ]
   },
   env: {
+    dest: {
+      publicPath: '/',
+      outputPath: './dist/dest'
+    },
     dev: {
       publicPath: '/',
       outputPath: './aaa',
@@ -15,10 +19,6 @@ module.exports = {
           }
         ]
       }
-    },
-    dest: {
-      publicPath: '/',
-      outputPath: './dist/dest'
     },
     qa: {
       publicPath: '/',
