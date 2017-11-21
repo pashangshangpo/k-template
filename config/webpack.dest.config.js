@@ -1,12 +1,19 @@
 const {join} = require('path');
-const {destPath, destDllPath, postcssPath, indexMapDestOut} = require('./config');
+const {root, destPath, destDllPath, dllPath, postcssPath, indexMapDestOut, indexMap, dllMap, kConfigPath} = require('./config');
+const kConfig = require(kConfigPath);
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const AssetsPlugin = require('assets-webpack-plugin');
 const common = require('./webpack.common.js');
-const dllMap = require(join(destPath, 'dll.map.json'));
-const manifestChunkhash = dllMap.vendor.js.substr(0, dllMap.vendor.js.lastIndexOf('.dll.js'));
+
+// 上下文
+const context = process.argv[2];
+let {outputPath, publicPath} = kConfig.env[context];
+// outputPath = join(root, outputPath);
+
+const dllMapConfig = require(join(root, outputPath, dllMap));
+const manifestChunkhash = dllMapConfig.vendor.js.substr(0, dllMapConfig.vendor.js.lastIndexOf('.dll.js'));
 
 module.exports = merge(common, {
   module: {
@@ -39,8 +46,8 @@ module.exports = merge(common, {
   output: {
       filename: 'js/[name].[chunkhash].js',
       chunkFilename: 'js/[chunkhash].chunk.js',
-      path: destPath,
-      publicPath: '/'
+      path: join(root, outputPath),
+      publicPath: publicPath
   },
   plugins: [
     new ExtractTextPlugin('css/[name].[contenthash].css'),
@@ -59,8 +66,8 @@ module.exports = merge(common, {
       'process.env.NODE_ENV': "'production'"
     }),
     new webpack.DllReferencePlugin({
-      manifest: require(join(destDllPath, `${manifestChunkhash}.manifest.json`))
+      manifest: require(join(root, outputPath, dllPath, `${manifestChunkhash}.manifest.json`))
     }),
-    new AssetsPlugin({filename: indexMapDestOut, prettyPrint: true})
+    new AssetsPlugin({filename: join(outputPath, indexMap), prettyPrint: true})
   ]
 });

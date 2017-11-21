@@ -6,6 +6,7 @@ let {
   devDllPath,
   webpackDllCommonPath,
   webpackDevDllPath,
+  webpackDestDllPath,
   port,
   devServerPath,
   destServerPath,
@@ -100,7 +101,8 @@ switch (context) {
     shell.rm('-rf', destPath);
 
     console.log('正在为您进行打包...');
-    shell.exec('yarn run destdll');
+    // shell.exec('yarn run destdll');
+    shell.exec(['webpack --config', webpackDestDllPath, `--env.context=${devContent}`].join(' '));
 
     shell.exec([
       'node',

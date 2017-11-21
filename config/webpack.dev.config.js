@@ -9,7 +9,7 @@ let entry = common.entry;
 
 // 上下文
 const context = process.argv[3];
-let {outputPath, publicPath} = kConfig.env[context]
+let {outputPath, publicPath} = kConfig.env[context];
 
 // 自动添加webpack-hot-middleware
 let hotConfig = [

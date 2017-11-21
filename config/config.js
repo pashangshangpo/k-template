@@ -92,6 +92,8 @@ module.exports = {
   apiPath,
   devPath,
   destPath,
+  indexMap,
+  dllMap,
   indexMapDest,
   dllMapDest,
   dllPath,

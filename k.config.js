@@ -1,5 +1,3 @@
-import { func } from "../../Library/Caches/typescript/2.6/node_modules/@types/assert-plus";
-
 module.exports = {
   entry: {
     index: [
@@ -9,7 +7,7 @@ module.exports = {
   env: {
     dev: {
       publicPath: '/',
-      outputPath: './dev',
+      outputPath: './aaa',
       inject: {
         js: [
           function () {

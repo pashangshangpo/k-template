@@ -10,15 +10,17 @@ const {
   destPath,
   dllPath,
   injectPath,
-  indexMapDest,
-  dllMapDest,
+  indexMap,
+  dllMap,
   kConfigPath
 } = require('../config/config');
 const webpackConfig = require(webpackDestPath);
 const entry = webpackConfig.entry;
 const context = process.argv[2];
-const curConfig = require(kConfigPath).env[context];
-const {inject, outputPath} = curConfig;
+const destConfig = require(kConfigPath).env[context];
+const {inject, outputPath} = destConfig;
+const indexMapDest = join(root, outputPath, indexMap);
+const dllMapDest = join(root, outputPath, dllMap);
 
 // 构建
 const compiler = webpack(webpackConfig);
