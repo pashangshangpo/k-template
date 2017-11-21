@@ -4,6 +4,10 @@ const {resolve, join} = require('path');
 const root = resolve('.');
 // 项目名
 const project = root.split('/').pop();
+// 配置路径
+const configPath = join(root, 'config');
+// 模板文件
+const templatePath = join(root, 'config/template.html');
 // devhtml
 const devHtmlPath = join(root, 'config/dev.html');
 // desthtml
@@ -60,7 +64,9 @@ const tempPath = join(root, 'temp');
 const fileTimePath = join(tempPath, 'filetime.json');
 
 // k.config.js
-const kConfigPath = join(root, 'k.config.js');
+const kConfigPath = join(configPath, 'k.config.js');
+// 用户配置
+const userKConfigPath = join(root, 'k.config.js');
 
 // port
 const port = 8087;
@@ -68,6 +74,7 @@ const port = 8087;
 module.exports = {
   root,
   project,
+  templatePath,
   devHtmlPath,
   destHtmlPath,
   injectPath,
@@ -92,5 +99,6 @@ module.exports = {
   dllMapDestOut,
   tempPath,
   fileTimePath,
-  kConfigPath
+  kConfigPath,
+  userKConfigPath
 };

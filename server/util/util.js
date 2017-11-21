@@ -46,24 +46,24 @@ module.exports = {
   appendCss: (html, css) => {
 	  let arr = [];
     for (let item of css) {
-      arr.push(`    <link rel="stylesheet" href="${addQuery(item, {dateTime: '@dateTime@'})}">`);
+      arr.push(`    <link rel="stylesheet" href="${item}">`);
     }
 
 	  return html.replace(/<head>([\s\S]*)<\/head>/, ['<head>$1', arr.join('\n'), '</head>'].join('\n'));
   },
   // 向html添加js
-  appendJs: (html, js, context) => {
+  appendJs: (html, js) => {
 	  let arr = [];
 	  for (let item of js) {
 	    if (typeof item === 'string') {
-	      arr.push(`    <script src="${addQuery(item, {dateTime: '@dateTime@'})}"></script>`);
+	      arr.push(`    <script src="${item}"></script>`);
       }
       else {
-	      arr.push(`    <script>;(${item}('${context}'));</script>`);
+	      arr.push(`    <script>;(${item}());</script>`);
       }
     }
 
-    return html.replace(/<head>([\s\S]*)<\/head>/, ['<head>$1', arr.join('\n'), '</head>'].join('\n'));
+    return html.replace(/<body>([\s\S]*)<\/body>/, ['<body>$1', arr.join('\n'), '</body>'].join('\n'));
   },
   // 获取本机ip地址
   getIp: () => {

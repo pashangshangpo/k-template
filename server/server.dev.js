@@ -2,13 +2,14 @@ const http = require('http');
 const fs = require('fs');
 const {resolve, join} = require('path');
 const {fileContentReplace, replace, appendCss, appendJs, getIp} = require('./util/util');
-let {devHtmlPath, injectPath, webpackDevPath, devPath} = require('../config/config');
+let {templatePath, injectPath, webpackDevPath, devPath, kConfigPath} = require('../config/config');
 const Koa = require('koa2');
 const app = new Koa();
 const Router = require('koa-router');
 const router = new Router();
 const webpackMiddleware = require('koa-webpack');
 const webpack = require('webpack');
+const merge = require('webpack-merge');
 const chokidar = require('chokidar');
 const mockServer = require('./common/mockServer');
 
@@ -30,7 +31,7 @@ let middleware = webpackMiddleware({
 });
 
 let timer = null;
-chokidar.watch([devHtmlPath, injectPath]).on('all', (event, path) => {
+chokidar.watch([templatePath, injectPath]).on('all', (event, path) => {
   clearTimeout(timer);
 
   if (event === 'change') {
@@ -44,11 +45,12 @@ chokidar.watch([devHtmlPath, injectPath]).on('all', (event, path) => {
 
 let reloadHTML = () => {
   // 防止缓存
-  delete require.cache[injectPath];
-  const dev = require(injectPath).dev;
+  delete require.cache[kConfigPath];
+  const kConfig = require(kConfigPath);
+  const dev = merge(kConfig.inject, kConfig.env[devContext].inject);
 
   // 模板内容
-  let html = fs.readFileSync(devHtmlPath).toString();
+  let html = fs.readFileSync(templatePath).toString();
 
   // 向模板中注入代码
   for (let key of Object.keys(dev)) {
@@ -58,7 +60,7 @@ let reloadHTML = () => {
         html = appendCss(html, section);
       }
       else if (key === 'js') {
-        html = appendJs(html, section, devContext);
+        html = appendJs(html, section);
       }
     }
   }

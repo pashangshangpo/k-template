@@ -1,8 +1,8 @@
 module.exports = {
-  entry: './src/index.js',
-  inject: {
-    css: [],
-    js: []
+  entry: {
+    index: [
+      './src/index.js'
+    ]
   },
   env: {
     dev: {

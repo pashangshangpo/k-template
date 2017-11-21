@@ -6,16 +6,10 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const kConfig = require(kConfigPath);
 const common = require('./webpack.common.js');
 let entry = common.entry;
+
 // 上下文
 const context = process.argv[3];
-
-let outputPath = kConfig.env && kConfig.env[context] && kConfig.env[context].outputPath;
-if (outputPath) {
-  devPath = join(root, outputPath);
-}
-
-let publicPath = kConfig.env && kConfig.env[context] && kConfig.env[context].publicPath;
-
+let {outputPath, publicPath} = kConfig.env[context]
 
 // 自动添加webpack-hot-middleware
 let hotConfig = [
@@ -65,8 +59,8 @@ module.exports = merge(common, {
       filename: '[name].js',
       // 代码分割时的
       chunkFilename: '[chunkhash].chunk.js',
-      path: devPath,
-      publicPath: publicPath || '/'
+      path: join(root, outputPath),
+      publicPath: publicPath
   },
   devtool: 'inline-source-map',
   plugins: [
@@ -84,7 +78,7 @@ module.exports = merge(common, {
     }),
     // 引用公共包
     new webpack.DllReferencePlugin({
-        manifest: require(join(devPath, 'js/dll', 'vendor-manifest.json'))
+        manifest: require(join(root, outputPath, 'js/dll', 'vendor-manifest.json'))
     }),
     // 热加载
     new webpack.HotModuleReplacementPlugin(),

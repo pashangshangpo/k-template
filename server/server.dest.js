@@ -4,18 +4,21 @@ const {appendCss, appendJs, replace} = require('./util/util');
 const webpack = require('webpack');
 const minify = require('html-minifier').minify;
 const {
+  root,
   webpackDestPath, 
-  destHtmlPath, 
+  templatePath, 
   destPath,
   dllPath,
   injectPath,
   indexMapDest,
-  dllMapDest
+  dllMapDest,
+  kConfigPath
 } = require('../config/config');
 const webpackConfig = require(webpackDestPath);
 const entry = webpackConfig.entry;
-const dest = require(injectPath).dest;
 const context = process.argv[2];
+const curConfig = require(kConfigPath).env[context];
+const {inject, outputPath} = curConfig;
 
 // 构建
 const compiler = webpack(webpackConfig);
@@ -29,24 +32,25 @@ compiler.run((err, status) => {
     const dllMap = require(dllMapDest);
 
     // 模板内容
-    let html = fs.readFileSync(destHtmlPath).toString();
+    let html = fs.readFileSync(templatePath).toString();
 
     // 向模板中注入代码
-    for (let key of Object.keys(dest)) {
-      let section = dest[key];
+    for (let key of Object.keys(inject)) {
+      let section = inject[key];
       if (section.length > 0) {
         if (key === 'css') {
           html = appendCss(html, section);
         }
         else if (key === 'js') {
-          html = appendJs(html, section, context);
+          html = appendJs(html, section);
         }
       }
     }
 
+
     // 替换模板
     for (let key in entry) {
-      fs.writeFileSync(join(destPath, `${key}.html`), minify(replace(html, {
+      fs.writeFileSync(join(root, outputPath, `${key}.html`), minify(replace(html, {
         indexCssPath: indexMap.index.css,
         indexJsPath: indexMap.index.js,
         commonJsPath: indexMap.common.js,
