@@ -6,57 +6,41 @@ const root = resolve('.');
 const project = root.split('/').pop();
 // 配置路径
 const configPath = join(root, 'config');
-// 模板文件
-const templatePath = join(root, 'config/template.html');
-// devhtml
-const devHtmlPath = join(root, 'config/dev.html');
-// desthtml
-const destHtmlPath = join(root, 'config/dest.html');
-// inject
-const injectPath = join(root, 'config/inject.js');
-// postcssPath
-const postcssPath = join(root, 'config/postcss.config.js');
-// webpackDevPath
-const webpackDevPath = join(root, 'config/webpack.dev.config.js');
-// webpackDestPath
-const webpackDestPath = join(root, 'config/webpack.dest.config.js');
-// devServerPath
-const devServerPath = join(root, 'server/server.dev.js');
-// destServerPath
-const destServerPath = join(root, 'server/server.dest.js');
-
-// webpackDllCommonPath
-const webpackDllCommonPath = join(root, 'config/webpack.dll.common.js');
-// webpackDevDllPath
-const webpackDevDllPath = join(root, 'config/webpack.dll.dev.js');
-// webpackDestDllPath
-const webpackDestDllPath = join(root, 'config/webpack.dll.dest.js');
-// apiPath
+// 服务路径
+const serverPath = join(root, 'server');
+// api路径
 const apiPath = join(root, 'api/api.js');
 
-// devPath
-const devPath = join(root, 'dev');
-// destPath
-const destPath = join(root, 'dist/dest');
+// 模板文件
+const templatePath = join(configPath, 'template.html');
+
+// postcssPath
+const postcssPath = join(configPath, 'postcss.config.js');
+
+// webpackDevPath
+const webpackDevPath = join(configPath, 'webpack.dev.config.js');
+// webpackDestPath
+const webpackDestPath = join(configPath, 'webpack.dest.config.js');
+
+// devServerPath
+const devServerPath = join(serverPath, 'server.dev.js');
+// destServerPath
+const destServerPath = join(serverPath, 'server.dest.js');
+
+// webpackDllCommonPath
+const webpackDllCommonPath = join(configPath, 'webpack.dll.common.js');
+// webpackDevDllPath
+const webpackDevDllPath = join(configPath, 'webpack.dll.dev.js');
+// webpackDestDllPath
+const webpackDestDllPath = join(configPath, 'webpack.dll.dest.js');
+
 // dllPath
 const dllPath = '/js/dll';
-// devDllPath
-const devDllPath = join(devPath, dllPath);
-// destDllPath
-const destDllPath = join(destPath, dllPath);
-
-// indexMap
-const indexMap = 'index.map.json';
 // dllMap
 const dllMap = 'dll.map.json';
 // indexMap
-const indexMapDest = join(destPath, indexMap);
-// dllMapDest
-const dllMapDest = join(destPath, dllMap);
-// indexMapDestOut
-const indexMapDestOut = join('./dist/dest', indexMap);
-// dllMapDestOut
-const dllMapDestOut = join('./dist/dest', dllMap);
+const indexMap = 'index.map.json';
+
 
 // tempPath
 const tempPath = join(root, 'temp');
@@ -75,30 +59,19 @@ module.exports = {
   root,
   project,
   templatePath,
-  devHtmlPath,
-  destHtmlPath,
-  injectPath,
   postcssPath,
   webpackDevPath,
   webpackDestPath,
   webpackDevDllPath,
   webpackDestDllPath,
   webpackDllCommonPath,
-  devDllPath,
-  destDllPath,
   port,
   devServerPath,
   destServerPath,
   apiPath,
-  devPath,
-  destPath,
   indexMap,
   dllMap,
-  indexMapDest,
-  dllMapDest,
   dllPath,
-  indexMapDestOut,
-  dllMapDestOut,
   tempPath,
   fileTimePath,
   kConfigPath,
