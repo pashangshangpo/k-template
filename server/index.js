@@ -3,7 +3,6 @@ const {join} = require('path');
 const shell = require('shelljs');
 let {
   destPath, 
-  devDllPath,
   webpackDevDllPath,
   webpackDestDllPath,
   port,
