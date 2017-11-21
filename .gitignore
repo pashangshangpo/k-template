@@ -5,3 +5,4 @@ dev/
 dest/
 temp/
 yarn-error.log
+.vscode/
