@@ -11,7 +11,7 @@ module.exports = {
     },
     dev: {
       publicPath: '/',
-      outputPath: './aaa',
+      outputPath: './dev',
       inject: {
         js: [
           function () {
