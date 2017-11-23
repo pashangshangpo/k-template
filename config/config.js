@@ -58,6 +58,9 @@ const userKConfigPath = join(root, 'k.config.js');
 const port = 8087;
 
 module.exports = {
+  appDirResolve: path => {
+    return join(root, path);
+  },
   root,
   project,
   templatePath,

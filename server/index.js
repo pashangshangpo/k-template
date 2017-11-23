@@ -1,7 +1,6 @@
 const execSync = require('child_process').execSync;
-const {join} = require('path');
 const fs = require('fs');
-const {root} = require('../config/config');
+const {appDirResolve} = require('../config/config');
 
 // 判断是否存在yarn
 const isYarn = () => {
@@ -15,10 +14,10 @@ const isYarn = () => {
 
 // 判断是否安装过依赖
 const isInstall = () => {
-  const packageJson = require(join(root, 'package.json'));
+  const packageJson = require(appDirResolve('package.json'));
   let nodeModule = '';
   try {
-    nodeModule = fs.readdirSync(join(root, 'node_modules'));
+    nodeModule = fs.readdirSync(appDirResolve('node_modules'));
   }
   catch (e) {
     return false;
