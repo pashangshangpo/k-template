@@ -5,9 +5,9 @@ const root = resolve('.');
 // 项目名
 const project = root.split('/').pop();
 // 配置路径
-const configPath = join(root, 'lib/config');
+const configPath = join(root, 'config');
 // 服务路径
-const serverPath = join(root, 'lib/server');
+const serverPath = join(root, 'server');
 // api路径
 const apiPath = join(root, 'api/api.js');
 

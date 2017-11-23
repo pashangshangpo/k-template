@@ -28,7 +28,7 @@ for (let key in entry) {
     entry[key] = hotConfig.concat([join(root, section)]);
   }
 }
-console.log(entry)
+
 module.exports = merge(common, {
   module: {
     rules: [
