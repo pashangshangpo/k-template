@@ -66,9 +66,6 @@ if (!program.env) {
 
 const {type, port, env, dll} = program;
 
-
-console.log('正在为您检查相关配置...');
-
 /*let fileTimeObj = {
   create: () => {
     console.log('正在为您构建dll文件...');
@@ -95,6 +92,20 @@ console.log('正在为您检查相关配置...');
 
 // 当前配置
 const currentConfig = config.getEnVConfig(kConfig.env[env], type, env);
+
+// 启动服务
+const runServer = (devServerPath, port, webpackDevPath, outputPath, publicPath, inject) => {
+  require(devServerPath)({
+    port,
+    webpackConfig: require(webpackDevPath)(outputPath, publicPath),
+    inject
+  });
+};
+
+// 打包dll
+const runDll = (webpackDllConfig, func = (() => {})) => {
+  webpack(webpackDllConfig).run(func);
+};
 
 // 根据类型执行不同的事务
 if (type === 'server') {
@@ -124,23 +135,14 @@ if (type === 'server') {
   }
 
   if (webpackDllConfig) {
-    webpack(webpackDllConfig).run(() => {
-      console.log('dll构建完成');
+    runDll(webpackDllConfig, () => {
       console.log('正在为您启动本地服务...');
 
-      require(devServerPath)({
-        port,
-        webpackConfig: require(webpackDevPath)(currentConfig.outputPath, currentConfig.publicPath),
-        inject: currentConfig.inject
-      });
+      runServer(devServerPath, port, webpackDevPath, currentConfig.outputPath, currentConfig.publicPath, currentConfig.inject);
     });
   }
   else {
-    require(devServerPath)({
-      port,
-      webpackConfig: require(webpackDevPath)(currentConfig.outputPath, currentConfig.publicPath),
-      inject: currentConfig.inject
-    });
+    runServer(devServerPath, port, webpackDevPath, currentConfig.outputPath, currentConfig.publicPath, currentConfig.inject);
   }
 }
 else if (type === 'build') {
