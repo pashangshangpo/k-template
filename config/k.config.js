@@ -7,7 +7,7 @@ module.exports = merge(
     env: {
       dev: {
         publicPath: '/',
-        outputPath: './dev',
+        outputPath: 'dist/dev',
         inject: {
           css: [
             'css/index.css?dateTime=@dateTime@'
@@ -21,7 +21,7 @@ module.exports = merge(
       },
       dest: {
         publicPath: '/',
-        outputPath: './dist/dest',
+        outputPath: 'dist/dest',
         inject: {
           css: [
             '@indexCssPath@'

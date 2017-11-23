@@ -1,38 +1,73 @@
-const fs = require('fs');
 const {join} = require('path');
-const shell = require('shelljs');
+const program = require('commander');
+const webpack = require('webpack');
+const merge = require('webpack-merge');
+const fse = require('fs-extra');
+
 let {
-  destPath, 
+  root,
+  webpackDevPath,
+  webpackDestPath,
   webpackDevDllPath,
   webpackDestDllPath,
-  port,
   devServerPath,
   destServerPath,
   tempPath,
-  fileTimePath
+  fileTimePath,
+  kConfigPath
 } = require('../config/config');
-const context = process.argv[2];
-let len = process.argv.length;
-let devContent = context;
 
-// 判断环境
-switch (len) {
-  case 5:
-    devContent = process.argv[4];
-    port = process.argv[3];
-    break;
-  case 4:
-    if (isNaN(process.argv[3])) {
-      devContent = process.argv[3];
+const kConfig = require(kConfigPath);
+
+// 配置
+const config = {
+  envDefault: {
+    server: 'dev',
+    build: 'dest'
+  },
+  getEnVConfig: (envConfig, type, env) => {
+    let outputPath = '';
+    let inject = envConfig.inject;
+
+    if (type === 'server') {
+      // 开发环境不走配置,直接打到dev目录下
+      outputPath = join('dev', env);
     }
-    else {
-      port = process.argv[3];
+    else if (type === 'build') {
+      // 不指定输出目录则输出到dist目录下
+      outputPath = envConfig.outputPath || join('dist', env);
     }
-    break;
+    
+    // 合并inject
+    inject = merge(kConfig.inject, inject);
+
+    return {
+      entry: kConfig.entry,
+      outputPath: join(root, outputPath),      
+      publicPath: envConfig.publicPath || '/',
+      inject
+    };
+  }
+};
+
+program
+.version('0.0.1')
+.description('一个快速搭建Webpack环境工具')
+.option('-t, --type [type]', '运行环境类型,server,build')
+.option('-p, --port [port]', `端口,默认8087`, 8087)
+.option('-e, --env [env]', '上下文环境')
+.option('-d, --dll [dll]', '打包公共包', false)
+.parse(process.argv);
+
+// 参数判断
+if (!program.env) {
+  program.env = config.envDefault[program.type];
 }
 
-console.log('正在为您检查相关配置...');
+const {type, port, env, dll} = program;
 
+
+console.log('正在为您检查相关配置...');
 
 /*let fileTimeObj = {
   create: () => {
@@ -58,51 +93,67 @@ console.log('正在为您检查相关配置...');
   }
 };*/
 
-switch (context) {
-  case 'dev':
-    // 判断是否需要打包dll文件
-    if (fs.existsSync(fileTimePath)) {
-      let fileTime = require(fileTimePath);
-      let devDllTime = fs.lstatSync(webpackDevDllPath).mtimeMs;
+// 当前配置
+const currentConfig = config.getEnVConfig(kConfig.env[env], type, env);
 
-      if (devDllTime > fileTime.devDllTime) {
-        console.log('正在为您重新构建dll文件...');
-        shell.exec(['webpack --config', webpackDevDllPath, `--env.context=${devContent}`].join(' '));
-        
-        fileTime.devDllTime = devDllTime;
-        fs.writeFileSync(fileTimePath, JSON.stringify(fileTime));
-      }
+// 根据类型执行不同的事务
+if (type === 'server') {
+
+  // 判断是否需要打包dll文件
+  if (fse.existsSync(fileTimePath)) {
+    let fileTime = require(fileTimePath);
+    let devDllTime = fse.lstatSync(webpackDevDllPath).mtimeMs;
+    let webpackDllConfig = '';
+
+    if (devDllTime > fileTime.devDllTime) {
+      console.log('正在为您重新构建dll文件...');
+      webpackDllConfig = require(webpackDevDllPath)(currentConfig.outputPath);
+      
+      fileTime.devDllTime = devDllTime;
+      fse.writeFileSync(fileTimePath, JSON.stringify(fileTime));
     }
-    else {
-      console.log('正在为您构建dll文件...');
-      shell.exec(['webpack --config', webpackDevDllPath, `--env.context=${devContent}`].join(' '));
+  }
+  else {
+    console.log('正在为您构建dll文件...');
+    webpackDllConfig = require(webpackDevDllPath)(currentConfig.outputPath);
 
-      fs.mkdirSync(tempPath);
-      fs.writeFileSync(fileTimePath, JSON.stringify({
-        devDllTime: fs.lstatSync(webpackDevDllPath).mtimeMs
-      }));
-    }
+    fse.mkdirSync(tempPath);
+    fse.writeFileSync(fileTimePath, JSON.stringify({
+      devDllTime: fse.lstatSync(webpackDevDllPath).mtimeMs
+    }));
+  }
 
-    console.log('正在为您启动本地服务...');
-    shell.exec([
-      'node',
-      devServerPath,
+  if (webpackDllConfig) {
+    webpack(webpackDllConfig).run(() => {
+      console.log('dll构建完成');
+      console.log('正在为您启动本地服务...');
+
+      require(devServerPath)({
+        port,
+        webpackConfig: require(webpackDevPath)(currentConfig.outputPath, currentConfig.publicPath),
+        inject: currentConfig.inject
+      });
+    });
+  }
+  else {
+    require(devServerPath)({
       port,
-      devContent
-    ].join(' '));
-    break;
-  case 'dest':
-    console.log('正在删除废弃数据...');
-    shell.rm('-rf', destPath);
+      webpackConfig: require(webpackDevPath)(currentConfig.outputPath, currentConfig.publicPath),
+      inject: currentConfig.inject
+    });
+  }
+}
+else if (type === 'build') {
+  console.log('正在删除废弃数据...');
+  fse.removeSync(currentConfig.outputPath);
 
-    console.log('正在为您进行打包...');
+  console.log('正在为您进行打包...');
 
-    shell.exec(['webpack --config', webpackDestDllPath, `--env.context=${devContent}`].join(' '));
+  // shell.exec(['webpack --config', webpackDestDllPath, `--env.context=${env}`].join(' '));
 
-    shell.exec([
-      'node',
-      destServerPath,
-      devContent
-    ].join(' '));
-    break;
+  // shell.exec([
+  //   'node',
+  //   destServerPath,
+  //   env
+  // ].join(' '));
 }

@@ -7,11 +7,11 @@ module.exports = {
   env: {
     dest: {
       publicPath: '/',
-      outputPath: './dist/dest'
+      outputPath: 'dist/dest'
     },
     dev: {
       publicPath: '/',
-      outputPath: './dev',
+      outputPath: 'dist/dev',
       inject: {
         js: [
           function () {
@@ -22,7 +22,7 @@ module.exports = {
     },
     qa: {
       publicPath: '/',
-      outputPath: './qa',
+      outputPath: 'dist/qa',
       inject: {
         js: [
           function () {

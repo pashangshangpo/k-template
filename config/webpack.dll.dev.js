@@ -1,15 +1,11 @@
 const webpack = require('webpack');
 const merge = require('webpack-merge');
-const {resolve, join} = require('path');
-const {root, dllPath, kConfigPath, webpackDllCommonPath} = require('./config');
-const kConfig = require(kConfigPath);
+const {join} = require('path');
+const {root, dllPath, webpackDllCommonPath} = require('./config');
 const library = '[name]_[hash]';
 
-module.exports = env => {
-  // 上下文
-  const context = env.context;
-  const {outputPath} = kConfig.env[context];
-  const devDllPath = join(root, outputPath, dllPath);
+module.exports = outputPath => {
+  const devDllPath = join(outputPath, dllPath);
 
   return merge(require(webpackDllCommonPath), {
     output: {

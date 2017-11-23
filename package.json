@@ -1,13 +1,13 @@
 {
-  "name": "k-template-server",
+  "name": "k-template",
   "version": "1.0.0",
   "main": "index.js",
   "repository": "https://github.com/pashangshangpo/k-template.git",
   "license": "MIT",
   "scripts": {
     "new": "node ./server/create.js",
-    "start": "node ./server/index.js dev",
-    "build": "node ./server/index.js dest",
+    "start": "node ./server/index.js -t server",
+    "build": "node ./server/index.js -t build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
