@@ -14,7 +14,7 @@ const filter = [
 
 
 if (!ideaName) {
-    console.log('请输入项目名, 如: yarn run create react-demo');
+    console.log('请输入项目名, 如: [yarn|npm] run create react-demo');
     return false;
 }
 
