@@ -109,12 +109,12 @@ const runDll = (webpackDllConfig, func = (() => {})) => {
 
 // 根据类型执行不同的事务
 if (type === 'server') {
+  let webpackDllConfig = '';
 
   // 判断是否需要打包dll文件
   if (fse.existsSync(fileTimePath)) {
     let fileTime = require(fileTimePath);
     let devDllTime = fse.lstatSync(webpackDevDllPath).mtimeMs;
-    let webpackDllConfig = '';
 
     if (devDllTime > fileTime.devDllTime) {
       console.log('正在为您重新构建dll文件...');
@@ -134,9 +134,9 @@ if (type === 'server') {
     }));
   }
 
+  console.log('正在为您启动本地服务...');
   if (webpackDllConfig) {
     runDll(webpackDllConfig, () => {
-      console.log('正在为您启动本地服务...');
 
       runServer(devServerPath, port, webpackDevPath, currentConfig.outputPath, currentConfig.publicPath, currentConfig.inject);
     });

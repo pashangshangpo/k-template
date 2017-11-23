@@ -1,20 +1,19 @@
-module.exports = ({port, webpackConfig, inject} = config) => {
-  const http = require('http');
-  const fs = require('fs');
-  const {resolve, join} = require('path');
-  const Koa = require('koa2');
-  const app = new Koa();
-  const Router = require('koa-router');
-  const router = new Router();
-  const webpackMiddleware = require('koa-webpack');
-  const webpack = require('webpack');
-  const merge = require('webpack-merge');
-  const chokidar = require('chokidar');
-  const mockServer = require('./common/mockServer');
+const http = require('http');
+const fs = require('fs');
+const {resolve, join} = require('path');
+const openbrowser = require('openbrowser');
+const Koa = require('koa2');
+const app = new Koa();
+const Router = require('koa-router');
+const router = new Router();
+const webpackMiddleware = require('koa-webpack');
+const webpack = require('webpack');
+const chokidar = require('chokidar');
+const mockServer = require('./common/mockServer');
+const {fileContentReplace, replace, appendCss, appendJs, getIp} = require('./util/util');
+let {root, templatePath, dllPath} = require('../config/config');
 
-  const {fileContentReplace, replace, appendCss, appendJs, getIp} = require('./util/util');
-  let {root, templatePath, dllPath} = require('../config/config');
-  
+module.exports = ({port, webpackConfig, inject} = config) => {
   const entry = webpackConfig.entry;
   const outputPath = webpackConfig.output.path;
   const publicPath = webpackConfig.output.publicPath;
@@ -96,7 +95,11 @@ module.exports = ({port, webpackConfig, inject} = config) => {
   
   server.listen(port, () => {
     let ip = getIp();
-    console.log(`server => http://${ip}:${port}`);
-    console.log(`See request info => http://${ip}:${port}/debug`);
-  });  
+    let url = `http://${ip}:${port}`;
+
+    console.log(`server => ${url}`);
+    console.log(`See request info => ${url}/debug`);
+
+    openbrowser(url);
+  });
 };
