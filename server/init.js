@@ -5,6 +5,7 @@ const merge = require('webpack-merge');
 const fse = require('fs-extra');
 const spawn = require('cross-spawn');
 const portIsOccupied = require('./util/portUtil');
+const {joinStr, removeFile} = require('./util/util');
 const defaultPort = 8087;
 
 let {
@@ -136,7 +137,9 @@ portIsOccupied(userPort, true, port => {
   }
   else if (type === 'build') {
     console.log('正在删除废弃数据...');
-    fse.removeSync(currentConfig.outputPath);
+
+    // 删除之前编译出来的数据,但不删除.git目录
+    removeFile(currentConfig.outputPath, ['.git']);
   
     console.log('正在为您进行打包...');
   

@@ -1,5 +1,8 @@
 const fs = require('fs');
+const {join} = require('path');
+const fse = require('fs-extra');
 
+// 添加query
 const addQuery = (url, obj) => {
   let str = '';
   if (url.lastIndexOf('?') !== -1) {
@@ -111,5 +114,20 @@ module.exports = {
     }
     
     return [].slice.apply(arguments).join('');
+  },
+  // 删除文件
+  removeFile: (path, filter) => {
+    try {
+      filter.forEach(item => {
+        fse.moveSync(join(path, item), join(path, '../', item));
+      });
+      
+      fse.removeSync(path);
+  
+      filter.forEach(item => {
+        fse.moveSync(join(path, '../', item), join(path, item));
+      });
+    }
+    catch (err) {}
   }
 };
