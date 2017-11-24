@@ -103,5 +103,13 @@ module.exports = {
   // 判断类型
   type: el => {
 	  return el.constructor.name;
+  },
+  // join字符串
+  joinStr(arr) {
+    if (Array.isArray(arr)) {
+      return arr.join('');
+    }
+    
+    return [].slice.apply(arguments).join('');
   }
 };

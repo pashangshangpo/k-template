@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const {join} = require('path');
-const {dllPath, webpackDllCommonPath} = require('./paths');
+const {dllPath, dllName, webpackDllCommonPath, manifestName} = require('./paths');
 const library = '[name]_[hash]';
 
 module.exports = outputPath => {
@@ -9,7 +9,7 @@ module.exports = outputPath => {
 
   return merge(require(webpackDllCommonPath), {
     output: {
-      filename: '[name].dll.js',
+      filename: '[name].' + dllName,
       path: devDllPath,
       library
     },
@@ -18,7 +18,7 @@ module.exports = outputPath => {
         'process.env.NODE_ENV': "'production'"
       }),
       new webpack.DllPlugin({
-        path: join(devDllPath, '[name]-manifest.json'),
+        path: join(devDllPath, '[name].' + manifestName),
         name: library
       })
     ]

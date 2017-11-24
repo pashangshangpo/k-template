@@ -1,5 +1,7 @@
 module.exports = {
   entry: {
-    vendor: ['react', 'react-dom', 'react-router', 'react-router-dom', 'mobx', 'mobx-react']
+    react: ['react', 'react-dom'],
+    router: ['react-router', 'react-router-dom'],
+    mobx: ['mobx', 'mobx-react']
   }
 };

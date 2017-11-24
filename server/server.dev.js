@@ -10,13 +10,48 @@ const webpackMiddleware = require('koa-webpack');
 const webpack = require('webpack');
 const chokidar = require('chokidar');
 const mockServer = require('./common/mockServer');
-const {fileContentReplace, replace, appendCss, appendJs, getIp} = require('./util/util');
-let {templatePath, dllPath} = require('../config/paths');
+const {fileContentReplace, replace, appendCss, appendJs, getIp, joinStr} = require('./util/util');
+let {
+  templatePath, 
+  dllPath, 
+  dllName,
+  cssPath, 
+  commonJsName, 
+  webpackDllCommonPath, 
+  manifestName
+} = require('../config/paths');
+const dllEntry = require(webpackDllCommonPath).entry;
 
-module.exports = ({port, webpackConfig, inject} = config) => {
+module.exports = ({port, webpackConfig, inject = {}} = config) => {
   const entry = webpackConfig.entry;
   const outputPath = webpackConfig.output.path;
   const publicPath = webpackConfig.output.publicPath;
+
+  inject.css = inject.css || [];
+  inject.js = inject.js || [];
+
+  // 返回静态资源
+  router.get('/', cxt => {
+    cxt.body = fs.readFileSync(join(outputPath, 'index.html')).toString();
+  });
+  
+  // 引用dll包
+  for (let key in dllEntry) {
+    inject.js.push(join(dllPath, joinStr(key, '.', dllName)));
+
+    webpackConfig.plugins.push(
+      new webpack.DllReferencePlugin({
+          manifest: require(join(outputPath, dllPath, joinStr(key, '.', manifestName)))
+      })
+    );
+
+    router.get(join(dllPath, joinStr(key, '.', dllName)), cxt => {
+      cxt.body = fs.readFileSync(join(outputPath, dllPath, joinStr(key, '.', dllName))).toString();
+    });
+  }
+
+  inject.css.push(cssPath);
+  inject.js.push(joinStr(commonJsName, '.js'));
   
   // 编译webpack
   let compiler = webpack(webpackConfig);
@@ -46,7 +81,7 @@ module.exports = ({port, webpackConfig, inject} = config) => {
   let reloadHTML = () => {
     // 模板内容
     let html = fs.readFileSync(templatePath).toString();
-  
+    
     // 向模板中注入代码
     for (let key of Object.keys(inject)) {
       let section = inject[key];
@@ -62,28 +97,16 @@ module.exports = ({port, webpackConfig, inject} = config) => {
   
     // 替换模板
     for (let key in entry) {
-      let curHtml = '';
-      fs.writeFileSync(join(outputPath, `${key}.html`), curHtml = replace(html, {
-        entryName: key,
-        dateTime: Date.now()
-      }));
+      html = appendJs(html, [joinStr(key, '.js')], true); 
+      fs.writeFileSync(join(outputPath, `${key}.html`), html);
   
       router.get(`/${key}`, cxt => {
-        cxt.body = curHtml;
+        cxt.body = html;
       });
     }
   };
   
   reloadHTML();
-  
-  // 返回静态资源
-  router.get('/', cxt => {
-    cxt.body = fs.readFileSync(join(outputPath, 'index.html')).toString();
-  });
-  
-  router.get('/dll/vendor.dll.js', cxt => {
-    cxt.body = fs.readFileSync(join(outputPath, dllPath,'vendor.dll.js')).toString();
-  });
   
   app.use(router.routes());
   app.use(middleware);
@@ -91,15 +114,18 @@ module.exports = ({port, webpackConfig, inject} = config) => {
   // 服务
   let server = http.createServer(app.callback());
   
+  // 转发请求
   mockServer(app, server);
   
   server.listen(port, () => {
+    // 获取局域网ip
     let ip = getIp();
     let url = `http://${ip}:${port}`;
 
     console.log(`server => ${url}`);
     console.log(`See request info => ${url}/debug`);
 
+    // 打开浏览器
     openbrowser(url);
   });
 };

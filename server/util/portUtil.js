@@ -6,9 +6,9 @@ const net = require('net');
  * isTrue: 端口被占用时,是否尝试重新获取一个可用的端口
  * cb: 回调函数
  */
-module.exports = isPort = (port, isTrue, cb) => {
+module.exports = portIsOccupied = (port, isTrue, cb) => {
   port = Math.ceil(port);
-  
+
   if (typeof isTrue === 'function') {
     cb = isTrue;
     isTrue = false;
@@ -30,7 +30,7 @@ module.exports = isPort = (port, isTrue, cb) => {
   server.on('error', err => {
     if (err.code === 'EADDRINUSE') {
       if (isTrue) {
-        isPort(port + 1, isTrue, cb);
+        portIsOccupied(port + 1, isTrue, cb);
       }
       else {
         cb();

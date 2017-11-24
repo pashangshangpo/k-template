@@ -15,34 +15,5 @@ module.exports = merge(
       }
     }
   },
-  require(userKConfigPath),
-  // 用户配置的inject会被放在前面
-  {
-    env: {
-      dev: {
-        inject: {
-          css: [
-            'css/index.css'
-          ],
-          js: [
-            'dll/vendor.dll.js',
-            'common.js',
-            '@entryName@.js'
-          ]
-        }
-      },
-      dest: {
-        inject: {
-          css: [
-            '@indexCssPath@'
-          ],
-          js: [
-            '@dllJsPath@',
-            '@commonJsPath@',
-            '@indexJsPath@'
-          ]
-        }
-      }
-    }
-  }
+  require(userKConfigPath)
 );

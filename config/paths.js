@@ -29,8 +29,8 @@ const postcssPath = join(configPath, 'postcss.config.js');
 const webpackDevPath = join(configPath, 'webpack.dev.config.js');
 // webpackDestPath
 const webpackDestPath = join(configPath, 'webpack.dest.config.js');
-// devClient
-const devClient = join(serverPath, 'dev.client.js');
+// devClientPath
+const devClientPath = join(serverPath, 'dev.client.js');
 
 // devServerPath
 const devServerPath = join(serverPath, 'server.dev.js');
@@ -43,13 +43,24 @@ const webpackDllCommonPath = join(configPath, 'webpack.dll.common.js');
 const webpackDevDllPath = join(configPath, 'webpack.dll.dev.js');
 // webpackDestDllPath
 const webpackDestDllPath = join(configPath, 'webpack.dll.dest.js');
+// webpackCommonPath
+const webpackCommonPath = join(configPath, 'webpack.common.js');
+
+// cssPath
+const cssPath = '/css/index.css';
 
 // dllPath
-const dllPath = 'js/dll';
+const dllPath = '/js/dll';
 // dllMap
 const dllMap = 'dll.map.json';
+// dllName
+const dllName = 'dll.js';
 // indexMap
 const indexMap = 'index.map.json';
+// commonJsName
+const commonJsName = 'common';
+// manifest.json
+const manifestName = 'manifest.json';
 
 
 // tempPath
@@ -73,15 +84,20 @@ module.exports = {
   webpackDevDllPath,
   webpackDestDllPath,
   webpackDllCommonPath,
+  webpackCommonPath,
   devServerPath,
   destServerPath,
   apiPath,
   indexMap,
   dllMap,
   dllPath,
+  commonJsName,
   tempPath,
   fileTimePath,
   kConfigPath,
   userKConfigPath,
-  devClient
+  devClientPath,
+  cssPath,
+  manifestName,
+  dllName
 };
