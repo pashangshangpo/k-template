@@ -7,21 +7,31 @@ module.exports = merge(
     env: {
       dev: {
         publicPath: '/',
-        outputPath: 'dist/dev',
+        outputPath: 'dist/dev'
+      },
+      dest: {
+        publicPath: '/',
+        outputPath: 'dist/dest'
+      }
+    }
+  },
+  require(userKConfigPath),
+  // 用户配置的inject会被放在前面
+  {
+    env: {
+      dev: {
         inject: {
           css: [
-            'css/index.css?dateTime=@dateTime@'
+            'css/index.css'
           ],
           js: [
-            'dll/vendor.dll.js?dateTime=@dateTime@',
-            'common.js?dateTime=@dateTime@',
-            '@entryName@.js?dateTime=@dateTime@'
+            'dll/vendor.dll.js',
+            'common.js',
+            '@entryName@.js'
           ]
         }
       },
       dest: {
-        publicPath: '/',
-        outputPath: 'dist/dest',
         inject: {
           css: [
             '@indexCssPath@'
@@ -34,6 +44,5 @@ module.exports = merge(
         }
       }
     }
-  },
-  require(userKConfigPath)
+  }
 );

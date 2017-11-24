@@ -1,12 +1,12 @@
 const fs = require('fs');
 
-const addQuery = (query, obj) => {
+const addQuery = (url, obj) => {
   let str = '';
-  if (query.lastIndexOf('?') !== -1) {
+  if (url.lastIndexOf('?') !== -1) {
     for (let key in obj) {
       str += `&${key}=${obj[key]}`;
     }
-    return [query, str].join('');
+    return [url, str].join('');
   }
   else {
     let i = 0;
@@ -19,7 +19,7 @@ const addQuery = (query, obj) => {
       }
       i += 1;
     }
-    return [query, str].join('');
+    return [url, str].join('');
   }
 };
 
@@ -43,23 +43,35 @@ module.exports = {
     return html;
   },
   // 向html添加css
-  appendCss: (html, css) => {
+  appendCss: (html, css, addTime) => {
 	  let arr = [];
     for (let item of css) {
-      arr.push(`    <link rel="stylesheet" href="${item}">`);
+      item = addTime 
+      ? addQuery(item, {
+          dateTime: Date.now()
+        })
+      : item;
+
+      arr.push(`<link rel="stylesheet" href="${item}">`);
     }
 
 	  return html.replace(/<head>([\s\S]*)<\/head>/, ['<head>$1', arr.join('\n'), '</head>'].join('\n'));
   },
   // 向html添加js
-  appendJs: (html, js) => {
+  appendJs: (html, js, addTime) => {
 	  let arr = [];
 	  for (let item of js) {
 	    if (typeof item === 'string') {
-	      arr.push(`    <script src="${item}"></script>`);
+        item = addTime 
+        ? addQuery(item, {
+            dateTime: Date.now()
+          })
+        : item;
+        
+	      arr.push(`<script src="${item}"></script>`);
       }
       else {
-	      arr.push(`    <script>;(${item}());</script>`);
+	      arr.push(`<script>;(${item}());</script>`);
       }
     }
 

@@ -52,10 +52,10 @@ module.exports = ({port, webpackConfig, inject} = config) => {
       let section = inject[key];
       if (section.length > 0) {
         if (key === 'css') {
-          html = appendCss(html, section);
+          html = appendCss(html, section, true);
         }
         else if (key === 'js') {
-          html = appendJs(html, section);
+          html = appendJs(html, section, true);
         }
       }
     }
