@@ -81,6 +81,14 @@ const runServer = (devServerPath, port, webpackDevPath, outputPath, publicPath, 
   });
 };
 
+// 编译
+const runBuild = (destServerPath, webpackDestPath, outputPath, publicPath, inject) => {
+  require(destServerPath)({
+    webpackConfig: require(webpackDestPath)(outputPath, publicPath),
+    inject
+  });
+};
+
 // 打包dll
 const runDll = (webpackDllConfig, func = (() => {})) => {
   webpack(webpackDllConfig).run(func);
@@ -137,19 +145,13 @@ portIsOccupied(userPort, true, port => {
   }
   else if (type === 'build') {
     console.log('正在删除废弃数据...');
-
     // 删除之前编译出来的数据,但不删除.git目录
     removeFile(currentConfig.outputPath, ['.git']);
   
-    console.log('正在为您进行打包...');
-  
-    // shell.exec(['webpack --config', webpackDestDllPath, `--env.context=${env}`].join(' '));
-  
-    // shell.exec([
-    //   'node',
-    //   destServerPath,
-    //   env
-    // ].join(' '));
+    console.log('正在编译中...');
+    runDll(webpackDestDllPath, () => {
+      runBuild(destServerPath, webpackDestPath, currentConfig.outputPath, currentConfig.publicPath, currentConfig.inject);
+    });
   }
 });
 
