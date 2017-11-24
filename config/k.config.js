@@ -1,5 +1,5 @@
 const merge = require('webpack-merge');
-const {userKConfigPath} = require('./config');
+const {userKConfigPath} = require('./paths');
 
 // 合并默认配置
 module.exports = merge(

@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const {join} = require('path');
-const {root, dllPath, webpackDllCommonPath} = require('./config');
+const {dllPath, webpackDllCommonPath} = require('./paths');
 const library = '[name]_[hash]';
 
 module.exports = outputPath => {

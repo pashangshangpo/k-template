@@ -6,7 +6,7 @@ const fse = require('fs-extra');
 const spawn = require('cross-spawn');
 
 let {
-  root,
+  resolveApp,
   webpackDevPath,
   webpackDestPath,
   webpackDevDllPath,
@@ -16,7 +16,7 @@ let {
   tempPath,
   fileTimePath,
   kConfigPath
-} = require('../config/config');
+} = require('../config/paths');
 
 const kConfig = require(kConfigPath);
 
@@ -44,7 +44,7 @@ const config = {
 
     return {
       entry: kConfig.entry,
-      outputPath: join(root, outputPath),
+      outputPath: resolveApp(outputPath),
       publicPath: envConfig.publicPath || '/',
       inject
     };

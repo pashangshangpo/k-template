@@ -11,7 +11,7 @@ const webpack = require('webpack');
 const chokidar = require('chokidar');
 const mockServer = require('./common/mockServer');
 const {fileContentReplace, replace, appendCss, appendJs, getIp} = require('./util/util');
-let {root, templatePath, dllPath} = require('../config/config');
+let {templatePath, dllPath} = require('../config/paths');
 
 module.exports = ({port, webpackConfig, inject} = config) => {
   const entry = webpackConfig.entry;

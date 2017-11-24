@@ -1,4 +1,4 @@
-const {postcssPath, kConfigPath} = require('./config');
+const {postcssPath, kConfigPath} = require('./paths');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const util = require('../server/util/util');
 const kConfig = require(kConfigPath);

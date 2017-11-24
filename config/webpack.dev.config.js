@@ -1,5 +1,5 @@
 const {join} = require('path');
-let {root, postcssPath, devClient, dllPath} = require('./config');
+let {resolveApp, postcssPath, devClient, dllPath} = require('./paths');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
@@ -16,11 +16,11 @@ for (let key in entry) {
   let section = entry[key];
 
   if (Array.isArray(section)) {
-    section[0] = join(root, section[0]);
+    section[0] = resolveApp(section[0]);
     section.unshift.apply(section, hotConfig);
   }
   else {
-    entry[key] = hotConfig.concat([join(root, section)]);
+    entry[key] = hotConfig.concat([resolveApp(section)]);
   }
 }
 

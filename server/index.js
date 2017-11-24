@@ -1,6 +1,6 @@
 const execSync = require('child_process').execSync;
 const fs = require('fs');
-const {appDirResolve} = require('../config/config');
+const {resolveApp} = require('../config/paths');
 
 // 判断是否存在yarn
 const isYarn = () => {
@@ -14,10 +14,10 @@ const isYarn = () => {
 
 // 判断是否安装过依赖
 const isInstall = () => {
-  const packageJson = require(appDirResolve('package.json'));
+  const packageJson = require(resolveApp('package.json'));
   let nodeModule = '';
   try {
-    nodeModule = fs.readdirSync(appDirResolve('node_modules'));
+    nodeModule = fs.readdirSync(resolveApp('node_modules'));
   }
   catch (e) {
     return false;
@@ -31,7 +31,7 @@ const isInstall = () => {
 };
 
 // 安装依赖
-const install = async () => {
+const install = () => {
   if (!isInstall()) {
     console.log('正在为您安装相关依赖');
 

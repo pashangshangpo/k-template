@@ -1,4 +1,4 @@
-const {apiPath} = require('../../config/config');
+const {apiPath} = require('../../config/paths');
 
 module.exports = (app, server) => {
   const urlTo = require('url');
