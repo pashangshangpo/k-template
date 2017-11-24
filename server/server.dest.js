@@ -1,23 +1,41 @@
 const fs = require('fs');
 const {resolve, join} = require('path');
-const {appendCss, appendJs, replace} = require('./util/util');
+const {appendCss, appendJs, replace, joinStr} = require('./util/util');
 const webpack = require('webpack');
 const minify = require('html-minifier').minify;
 const {
+  resolveApp,
   templatePath, 
   dllPath,
   indexMap,
+  dllName,
   dllMap,
-  kConfigPath
-} = require('../config/config');
+  kConfigPath,
+  manifestName
+} = require('../config/paths');
 
-module.exports = (webpackConfig, inject) => {
+module.exports = ({webpackConfig, inject = {}} = config) => {
   const entry = webpackConfig.entry;
   const outputPath = webpackConfig.output.path;
-  const publicPath = webpackConfig.output.publicPath;
 
   const indexMapDest = join(outputPath, indexMap);
   const dllMapDest = join(outputPath, dllMap);
+  const dllMapConfig = require(dllMapDest);
+
+  inject.css = inject.css || [];
+  inject.js = inject.js || [];
+
+  // 引用dll包
+  for (let key in dllMapConfig) {
+    let name = dllMapConfig[key].js;
+    inject.js.push(join(dllPath, name));
+
+    webpackConfig.plugins.push(
+      new webpack.DllReferencePlugin({
+        manifest: require(join(outputPath, dllPath, joinStr(name.slice(0, name.indexOf(dllName) - 1), '.', manifestName)))
+      })
+    );
+  }
 
   // 构建
   const compiler = webpack(webpackConfig);
@@ -27,8 +45,15 @@ module.exports = (webpackConfig, inject) => {
       console.log(err);
     }
     else {
-      const indexMap = require(indexMapDest);
-      const dllMap = require(dllMapDest);
+      const indexMapConfig = require(indexMapDest);
+
+      inject.css = inject.css || [];
+      inject.js = inject.js || [];
+
+
+      inject.css.push(indexMapConfig.index.css);
+      inject.js.push(joinStr(indexMapConfig.common.js));
+      inject.js.push(joinStr(indexMapConfig.index.js));
 
       // 模板内容
       let html = fs.readFileSync(templatePath).toString();
@@ -49,14 +74,7 @@ module.exports = (webpackConfig, inject) => {
 
       // 替换模板
       for (let key in entry) {
-        fs.writeFileSync(join(root, outputPath, `${key}.html`), minify(replace(html, {
-          indexCssPath: indexMap.index.css,
-          indexJsPath: indexMap.index.js,
-          commonJsPath: indexMap.common.js,
-          dllJsPath: join(dllPath, dllMap.vendor.js),
-          entryName: key,
-          dateTime: Date.now()
-        }), {
+        fs.writeFileSync(resolveApp(outputPath, `${key}.html`), minify(html, {
           collapseBooleanAttributes: true,
           collapseInlineTagWhitespace: true,
           collapseWhitespace: true,

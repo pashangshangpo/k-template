@@ -6,8 +6,8 @@ const resolveOwn = path => {
 };
 
 // 相对于项目根目录
-const resolveApp = path => {
-  return resolve('.', path);
+const resolveApp = function() {
+  return resolve('.', [].slice.apply(arguments).join('/'));
 };
 
 // 项目名

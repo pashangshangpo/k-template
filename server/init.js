@@ -47,7 +47,7 @@ const config = {
 
     return {
       entry: kConfig.entry,
-      outputPath: resolveApp(outputPath),
+      outputPath: outputPath,
       publicPath: envConfig.publicPath || '/',
       inject
     };
@@ -94,30 +94,32 @@ const runDll = (webpackDllConfig, func = (() => {})) => {
   webpack(webpackDllConfig).run(func);
 };
 
-// 判断端口是否被占用
-portIsOccupied(userPort, true, port => {
-  if (port !== userPort && userPort !== defaultPort) {
-    console.log('您输入的端口', userPort ,'被占用,重新为您分配了一个端口:', port);
-  }
+let {type, env, dll} = program;
 
-  let {type, env, dll} = program;
-  
-  // 当前配置
-  const currentConfig = config.getEnVConfig(kConfig.env[env], type, env);
+// 当前配置
+const currentConfig = config.getEnVConfig(kConfig.env[env], type, env);
 
-  // 根据类型执行不同的事务
-  if (type === 'server') {
+// 根据类型执行不同的事务
+if (type === 'server') {
+  currentConfig.outputPath = resolveApp(currentConfig.outputPath);
+
+  // 判断端口是否被占用
+  portIsOccupied(userPort, true, port => {
+    if (port !== userPort && userPort !== defaultPort) {
+      console.log('您输入的端口', userPort ,'被占用,重新为您分配了一个端口:', port);
+    }
+
     let webpackDllConfig = '';
-  
+
     // 判断是否需要打包dll文件
     if (fse.existsSync(fileTimePath)) {
       let fileTime = require(fileTimePath);
       let devDllTime = fse.lstatSync(webpackDevDllPath).mtimeMs;
-  
+
       if (devDllTime > fileTime.devDllTime) {
         console.log('正在为您重新构建dll文件...');
         webpackDllConfig = require(webpackDevDllPath)(currentConfig.outputPath);
-  
+
         fileTime.devDllTime = devDllTime;
         fse.writeFileSync(fileTimePath, JSON.stringify(fileTime));
       }
@@ -125,35 +127,35 @@ portIsOccupied(userPort, true, port => {
     else {
       console.log('正在为您构建dll文件...');
       webpackDllConfig = require(webpackDevDllPath)(currentConfig.outputPath);
-  
+
       fse.mkdirSync(tempPath);
       fse.writeFileSync(fileTimePath, JSON.stringify({
         devDllTime: fse.lstatSync(webpackDevDllPath).mtimeMs
       }));
     }
-  
+
     console.log('正在为您启动本地服务...');
     if (webpackDllConfig) {
       runDll(webpackDllConfig, () => {
-  
+
         runServer(devServerPath, port, webpackDevPath, currentConfig.outputPath, currentConfig.publicPath, currentConfig.inject);
       });
     }
     else {
       runServer(devServerPath, port, webpackDevPath, currentConfig.outputPath, currentConfig.publicPath, currentConfig.inject);
     }
-  }
-  else if (type === 'build') {
-    console.log('正在删除废弃数据...');
-    // 删除之前编译出来的数据,但不删除.git目录
-    removeFile(currentConfig.outputPath, ['.git']);
-  
-    console.log('正在编译中...');
-    runDll(webpackDestDllPath, () => {
-      runBuild(destServerPath, webpackDestPath, currentConfig.outputPath, currentConfig.publicPath, currentConfig.inject);
-    });
-  }
-});
+  });
+}
+else if (type === 'build') {
+  console.log('正在删除废弃数据...');
+  // 删除之前编译出来的数据,但不删除.git目录
+  removeFile(currentConfig.outputPath, ['.git']);
+
+  console.log('正在编译中...');
+  runDll(require(webpackDestDllPath)(currentConfig.outputPath), () => {
+    runBuild(destServerPath, webpackDestPath, currentConfig.outputPath, currentConfig.publicPath, currentConfig.inject);
+  });
+}
 
 /*let fileTimeObj = {
   create: () => {
