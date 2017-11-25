@@ -118,6 +118,8 @@ const runDest = (currentConfig, func = () => {}) => {
 
 // destServer
 const destServer = (port, outputPath) => {
+  console.log('正在为您启动本地服务...');
+
   require('../server/common/server')(port, router => {
     router.all('*', cxt => {
       let url = cxt.url;
@@ -160,7 +162,7 @@ if (server || type === 'test') {
       console.log('启动服务失败,请先[yarn|npm] build');
     }
     else {
-      destServer(null, port, currentConfig.outputPath);
+      destServer(port, currentConfig.outputPath);
     }
   });
 }
