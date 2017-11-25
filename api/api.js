@@ -5,7 +5,6 @@ module.exports = {
     },
     request: {
         '/api/test': function () {
-          console.log(this.postData);
           return {
             status: 'ok'
           };
