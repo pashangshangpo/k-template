@@ -2,7 +2,7 @@ node_modules/
 .idea/
 .DS_Store
 dev/
-dest/
 temp/
 yarn-error.log
 .vscode/
+dist/
