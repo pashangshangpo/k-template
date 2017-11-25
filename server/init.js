@@ -121,21 +121,21 @@ const destServer = (port, outputPath) => {
   console.log('正在为您启动本地服务...');
 
   require('../server/common/server')(port, router => {
-    router.all('*', cxt => {
-      let url = cxt.url;
-      if (url === '/' || url === '') {
-        url = '/index.html';
-      }
-      url = resolveApp(outputPath, url);
-
-      if (!fse.existsSync(url)) {
-        cxt.body = '';
-      }
-      else {
-        cxt.set('Content-type', cxt.header.accept);
-        cxt.body = fse.readFileSync(url).toString();
-      }
-    });
+    // router.all('*', cxt => {
+    //   let url = cxt.url;
+    //   if (url === '/' || url === '') {
+    //     url = '/index.html';
+    //   }
+    //   url = resolveApp(outputPath, url);
+    //
+    //   if (!fse.existsSync(url)) {
+    //     cxt.body = '';
+    //   }
+    //   else {
+    //     cxt.set('Content-type', cxt.header.accept);
+    //     cxt.body = fse.readFileSync(url).toString();
+    //   }
+    // });
 
     return router;
   });

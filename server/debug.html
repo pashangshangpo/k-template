@@ -126,7 +126,7 @@
     });
 
     // 连接socket
-    let socket = io.connect(`http://${location.hostname}:9870`);
+    let socket = io.connect(location.host);
     socket.on('data', res => {
         vm.list = res;
     });
