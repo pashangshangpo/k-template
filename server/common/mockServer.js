@@ -1,16 +1,16 @@
+const urlTo = require('url');
+const http = require('http');
+const fs = require('fs');
+const querystring = require('querystring');
+const path = require('path');
+const multiparty = require('multiparty');
+const Router = require('koa-router');
+const router = new Router();
+const prettyHtml = require('json-pretty-html').default;
+const Mock = require('mockjs');
 const {apiPath} = require('../../config/paths');
 
 module.exports = (app, server) => {
-  const urlTo = require('url');
-  const http = require('http');
-  const fs = require('fs');
-  const querystring = require('querystring');
-  const path = require('path');
-  const multiparty = require('multiparty');
-  const Router = require('koa-router');
-  const router = new Router();
-  const prettyHtml = require('json-pretty-html').default;
-  const Mock = require('mockjs');
   const io = require('socket.io')(server);
 
   // 监听socket请求

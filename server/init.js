@@ -26,6 +26,7 @@ const kConfig = require(kConfigPath);
 // 配置
 const config = {
   envDefault: {
+    test: 'dest',
     server: 'dev',
     build: 'dest'
   },
@@ -37,7 +38,7 @@ const config = {
       // 开发环境不走配置,直接打到dev目录下
       outputPath = join('dev', env);
     }
-    else if (type === 'build') {
+    else if (type === 'build' || type === 'test') {
       // 不指定输出目录则输出到dist目录下
       outputPath = envConfig.outputPath || join('dist', env);
     }
@@ -58,10 +59,11 @@ const config = {
 program
 .version('0.0.1')
 .description('一个快速搭建Webpack环境工具')
-.option('-t, --type [type]', '运行环境类型,server,build')
+.option('-t, --type [type]', '运行环境类型,server,build,test')
 .option('-p, --port [port]', `端口`, defaultPort)
 .option('-e, --env [env]', '上下文环境')
 .option('-d, --dll [dll]', '打包公共包', false)
+.option('-s, --server [server]', '启服务')
 .parse(process.argv);
 
 // 参数判断
@@ -94,13 +96,54 @@ const runDll = (webpackDllConfig, func = (() => {})) => {
   webpack(webpackDllConfig).run(func);
 };
 
-let {type, env, dll} = program;
+let {type, env, dll, server} = program;
 
 // 当前配置
 const currentConfig = config.getEnVConfig(kConfig.env[env], type, env);
 
-// 根据类型执行不同的事务
-if (type === 'server') {
+// 生产环境起服务
+if (server || type === 'test') {
+  portIsOccupied(userPort, true, port => {
+    if (port !== userPort && userPort !== defaultPort) {
+      console.log('您输入的端口', userPort ,'被占用,重新为您分配了一个端口:', port);
+    }
+
+    // 编译
+    if (type === 'build') {
+      console.log('正在删除废弃数据...');
+      // 删除之前编译出来的数据,但不删除.git目录
+      removeFile(currentConfig.outputPath, ['.git']);
+    
+      console.log('正在编译中...');
+      runDll(require(webpackDestDllPath)(currentConfig.outputPath), () => {
+        runBuild(destServerPath, webpackDestPath, currentConfig.outputPath, currentConfig.publicPath, currentConfig.inject);
+
+        require('../server/common/server')(port, router => {
+          router.all('*', cxt => {
+            cxt.body = fse.readFileSync(resolveApp(currentConfig.outputPath, cxt.url)).toString();
+          });
+    
+          return router;
+        });
+      });
+    }
+    // 判断是否编译过
+    else if (!fse.existsSync(resolveApp(currentConfig.outputPath))) {
+      console.log('启动服务失败,请先[yarn|npm] build');
+    }
+    else {
+      require('../server/common/server')(port, router => {
+        router.all('*', cxt => {
+          cxt.body = fse.readFileSync(resolveApp(currentConfig.outputPath, cxt.url)).toString();
+        });
+  
+        return router;
+      });
+    }
+  });
+}
+// 开发环境
+else if (type === 'server') {
   currentConfig.outputPath = resolveApp(currentConfig.outputPath);
 
   // 判断端口是否被占用
@@ -146,6 +189,7 @@ if (type === 'server') {
     }
   });
 }
+// 编译环境
 else if (type === 'build') {
   console.log('正在删除废弃数据...');
   // 删除之前编译出来的数据,但不删除.git目录
