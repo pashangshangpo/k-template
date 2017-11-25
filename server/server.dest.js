@@ -83,8 +83,7 @@ module.exports = ({webpackConfig, inject = {}, func = (() => {})} = config) => {
           minifyURLs: true,
           removeAttributeQuotes: true,
           removeComments: true,
-          removeScriptTypeAttributes: true,
-          removeStyleLinkTypeAttributes: true
+          removeScriptTypeAttributes: true
         }));
       }
 

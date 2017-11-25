@@ -97,6 +97,43 @@ const runDll = (webpackDllConfig, func = (() => {})) => {
   webpack(webpackDllConfig).run(func);
 };
 
+// 编译dest
+const runDest = (currentConfig, func = () => {}) => {
+  runDll(require(webpackDestDllPath)(currentConfig.outputPath), () => {
+    runBuild(
+      destServerPath,
+      webpackDestPath,
+      currentConfig.outputPath,
+      currentConfig.publicPath,
+      currentConfig.inject,
+      func
+    );
+  });
+};
+
+// destServer
+const destServer = (port, outputPath) => {
+  require('../server/common/server')(port, router => {
+    router.all('*', cxt => {
+      let url = cxt.url;
+      if (url === '/' || url === '') {
+        url = '/index.html';
+      }
+      url = resolveApp(outputPath, url);
+
+      if (!fse.existsSync(url)) {
+        cxt.body = '';
+      }
+      else {
+        cxt.set('Content-type', cxt.header.accept);
+        cxt.body = fse.readFileSync(url).toString();
+      }
+    });
+
+    return router;
+  });
+};
+
 let {type, env, dll, server} = program;
 
 // 当前配置
@@ -116,47 +153,14 @@ if (server || type === 'test') {
       removeFile(currentConfig.outputPath, ['.git']);
     
       console.log('正在编译中...');
-      runDll(require(webpackDestDllPath)(currentConfig.outputPath), () => {
-        runBuild(
-          destServerPath, 
-          webpackDestPath, 
-          currentConfig.outputPath, 
-          currentConfig.publicPath, 
-          currentConfig.inject,
-          () => {
-            require('../server/common/server')(port, router => {
-              router.all('*', cxt => {
-                let url = cxt.url;
-                if (url === '/' || url === '') {
-                  url = '/index.html';
-                }
-    
-                cxt.body = fse.readFileSync(resolveApp(currentConfig.outputPath, url)).toString();
-              });
-        
-              return router;
-            });
-          }
-        );
-      });
+      runDest(currentConfig, destServer.bind(null, port, currentConfig.outputPath));
     }
     // 判断是否编译过
     else if (!fse.existsSync(resolveApp(currentConfig.outputPath))) {
       console.log('启动服务失败,请先[yarn|npm] build');
     }
     else {
-      require('../server/common/server')(port, router => {
-        router.all('*', cxt => {
-          let url = cxt.url;
-          if (url === '/' || url === '') {
-            url = '/index.html';
-          }
-
-          cxt.body = fse.readFileSync(resolveApp(currentConfig.outputPath, url)).toString();
-        });
-  
-        return router;
-      });
+      destServer(null, port, currentConfig.outputPath);
     }
   });
 }
@@ -214,9 +218,7 @@ else if (type === 'build') {
   removeFile(currentConfig.outputPath, ['.git']);
 
   console.log('正在编译中...');
-  runDll(require(webpackDestDllPath)(currentConfig.outputPath), () => {
-    runBuild(destServerPath, webpackDestPath, currentConfig.outputPath, currentConfig.publicPath, currentConfig.inject);
-  });
+  runDest(currentConfig);
 }
 
 /*let fileTimeObj = {

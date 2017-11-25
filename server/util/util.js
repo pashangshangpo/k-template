@@ -55,7 +55,7 @@ module.exports = {
         })
       : item;
 
-      arr.push(`<link rel="stylesheet" href="${item}">`);
+      arr.push(`<link rel="stylesheet" type="text/css" href="${item}">`);
     }
 
 	  return html.replace(/<head>([\s\S]*)<\/head>/, ['<head>$1', arr.join('\n'), '</head>'].join('\n'));
