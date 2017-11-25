@@ -99,6 +99,11 @@ const runDll = (webpackDllConfig, func = (() => {})) => {
 
 // 编译dest
 const runDest = (currentConfig, func = () => {}) => {
+  console.log('正在删除废弃数据...');
+  // 删除之前编译出来的数据,但不删除.git目录
+  removeFile(resolveApp(currentConfig.outputPath), ['.git']);
+
+  console.log('正在编译中...');
   runDll(require(webpackDestDllPath)(currentConfig.outputPath), () => {
     runBuild(
       destServerPath,
@@ -148,11 +153,6 @@ if (server || type === 'test') {
 
     // 编译
     if (type === 'build') {
-      console.log('正在删除废弃数据...');
-      // 删除之前编译出来的数据,但不删除.git目录
-      removeFile(currentConfig.outputPath, ['.git']);
-    
-      console.log('正在编译中...');
       runDest(currentConfig, destServer.bind(null, port, currentConfig.outputPath));
     }
     // 判断是否编译过
@@ -213,11 +213,6 @@ else if (type === 'server') {
 }
 // 编译环境
 else if (type === 'build') {
-  console.log('正在删除废弃数据...');
-  // 删除之前编译出来的数据,但不删除.git目录
-  removeFile(currentConfig.outputPath, ['.git']);
-
-  console.log('正在编译中...');
   runDest(currentConfig);
 }
 

@@ -121,9 +121,15 @@ module.exports = {
       filter.forEach(item => {
         fse.moveSync(join(path, item), join(path, '../', item));
       });
-      
+    }
+    catch (err) {}
+
+    try {
       fse.removeSync(path);
-  
+    }
+    catch (err) {}
+
+    try {
       filter.forEach(item => {
         fse.moveSync(join(path, '../', item), join(path, item));
       });
