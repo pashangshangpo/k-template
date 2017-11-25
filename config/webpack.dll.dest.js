@@ -11,7 +11,7 @@ module.exports = outputPath => {
 
   return merge(require(webpackDllCommonPath), {
     output: {
-      filename: joinStr('[chunkhash].', dllName),
+      filename: joinStr('[name].[chunkhash].', dllName),
       path: destDllPath,
       library
     },
@@ -30,7 +30,7 @@ module.exports = outputPath => {
         }
       }),
       new webpack.DllPlugin({
-        path: join(destDllPath, joinStr('[chunkhash].', manifestName)),
+        path: join(destDllPath, joinStr('[name].[chunkhash].', manifestName)),
         name: library
       }),
       new AssetsPlugin({
