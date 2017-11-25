@@ -47,7 +47,7 @@ const webpackDestDllPath = join(configPath, 'webpack.dll.dest.js');
 const webpackCommonPath = join(configPath, 'webpack.common.js');
 
 // cssPath
-const cssPath = '/css/index.css';
+const cssPath = 'css/index.css';
 
 // dllPath
 const dllPath = '/js/dll';

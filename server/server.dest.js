@@ -51,7 +51,7 @@ module.exports = ({webpackConfig, inject = {}} = config) => {
       inject.js = inject.js || [];
 
 
-      inject.css.push(indexMapConfig.index.css);
+      indexMapConfig.index.css ? inject.css.push(indexMapConfig.index.css) : '';
       inject.js.push(joinStr(indexMapConfig.common.js));
       inject.js.push(joinStr(indexMapConfig.index.js));
 
