@@ -84,10 +84,11 @@ const runServer = (devServerPath, port, webpackDevPath, outputPath, publicPath, 
 };
 
 // 编译
-const runBuild = (destServerPath, webpackDestPath, outputPath, publicPath, inject) => {
+const runBuild = (destServerPath, webpackDestPath, outputPath, publicPath, inject, func = (() => {})) => {
   require(destServerPath)({
     webpackConfig: require(webpackDestPath)(outputPath, publicPath),
-    inject
+    inject,
+    func
   });
 };
 
@@ -116,15 +117,27 @@ if (server || type === 'test') {
     
       console.log('正在编译中...');
       runDll(require(webpackDestDllPath)(currentConfig.outputPath), () => {
-        runBuild(destServerPath, webpackDestPath, currentConfig.outputPath, currentConfig.publicPath, currentConfig.inject);
-
-        require('../server/common/server')(port, router => {
-          router.all('*', cxt => {
-            cxt.body = fse.readFileSync(resolveApp(currentConfig.outputPath, cxt.url)).toString();
-          });
+        runBuild(
+          destServerPath, 
+          webpackDestPath, 
+          currentConfig.outputPath, 
+          currentConfig.publicPath, 
+          currentConfig.inject,
+          () => {
+            require('../server/common/server')(port, router => {
+              router.all('*', cxt => {
+                let url = cxt.url;
+                if (url === '/' || url === '') {
+                  url = '/index.html';
+                }
     
-          return router;
-        });
+                cxt.body = fse.readFileSync(resolveApp(currentConfig.outputPath, url)).toString();
+              });
+        
+              return router;
+            });
+          }
+        );
       });
     }
     // 判断是否编译过
@@ -134,7 +147,12 @@ if (server || type === 'test') {
     else {
       require('../server/common/server')(port, router => {
         router.all('*', cxt => {
-          cxt.body = fse.readFileSync(resolveApp(currentConfig.outputPath, cxt.url)).toString();
+          let url = cxt.url;
+          if (url === '/' || url === '') {
+            url = '/index.html';
+          }
+
+          cxt.body = fse.readFileSync(resolveApp(currentConfig.outputPath, url)).toString();
         });
   
         return router;

@@ -14,7 +14,7 @@ const {
   manifestName
 } = require('../config/paths');
 
-module.exports = ({webpackConfig, inject = {}} = config) => {
+module.exports = ({webpackConfig, inject = {}, func = (() => {})} = config) => {
   const entry = webpackConfig.entry;
   const outputPath = webpackConfig.output.path;
 
@@ -90,6 +90,7 @@ module.exports = ({webpackConfig, inject = {}} = config) => {
 
       console.log('构建完成');
 
+      func();      
       fs.unlinkSync(indexMapDest);
       fs.unlinkSync(dllMapDest);
     }
