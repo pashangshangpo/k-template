@@ -7,7 +7,6 @@ const {join} = require('path');
 const multiparty = require('multiparty');
 const Router = require('koa-router');
 const router = new Router();
-const prettyHtml = require('json-pretty-html').default;
 const Mock = require('mockjs');
 const {apiPath, resolveApp} = require('../../config/paths');
 const {each, joinStr} = require('../util/util');
@@ -27,135 +26,28 @@ module.exports = (app, server, staticPath) => {
   // emitData
   let emitData = () => {
       if (socket) {
-        let data = results.data;
-        data = data.map(item => {
-          item.postData = toHtml(item.postData);
-          item.formData = toHtml(item.formData);
-          item.resultData = toHtml(item.resultData);
-
-          return item;
-        });
-        socket.emit('data', data);
+        socket.emit('data', results.data);
       }
-  };
-
-  let toHtml = val => {
-      let html = null;
-      let text = null;
-
-      if (typeof val === 'object') {
-          if (JSON.stringify(val) === '{}') {
-              text = null;
-          }
-          else {
-              html = prettyHtml(val);
-          }
-      }
-      else {
-          try {
-              html = prettyHtml(JSON.parse(val));
-          }
-          catch (err) {
-              text = val;
-          }
-      }
-
-      return {
-          html,
-          text
-      };
   };
 
   // 收集信息
   let results = {
       data: [],
-      add: ({req, reqBody, resBody} = data) => {
-          results.data.push({
-              method: req.method,
-              url: req.url,
-              query: querystring.parse(urlTo.parse(req.url).query),
-              reqBody: reqBody,
-              resBody: resBody
-          });
+      add: ({req, reqBody, resBody, from = 'local'} = data) => {
+        results.data.push({
+          from,
+          method: req.method,
+          url: req.url,
+          query: querystring.parse(urlTo.parse(req.url).query),
+          reqBody: reqBody,
+          resBody: resBody
+        });
 
-          console.log(results.data);
+        emitData();
       },
       clear: () => {
           results.data.length = 0;
       }
-  };
-
-  // 打开跨域
-  let openCross = (req, res) => {
-      res.set('Access-Control-Allow-Origin', '*');
-
-      if ('options' === req.method.toLowerCase()) {
-          res.set({
-              'Content-Type': 'text/plain',
-              'Access-Control-Allow-Credentials': 'true',
-              'Access-Control-Allow-Methods': 'POST,GET,OPTIONS,PUT,DELETE',
-              'Access-Control-Allow-Headers': 'cache-control,content-type,hash-referer,x-requested-with',
-              'Access-Control-Allow-Origin': '*'
-          });
-          res.body = ' ';
-          return true;
-      }
-  };
-
-  // 匹配路径
-  let regPath = (apiRequest, pathname) => {
-      let regResult = null;
-      let result = null;
-      for (let k in apiRequest) {
-          if (apiRequest.hasOwnProperty(k)) {
-              if (regResult = pathname.match(new RegExp(k))) {
-                  result = {
-                      name: k,
-                      data: apiRequest[k],
-                      regResult: regResult
-                  };
-              }
-          }
-      }
-
-      return result;
-  };
-
-  // 获取本地数据
-  let requestLocalData = regItem => {
-      let data = '';
-      let resData = results.data[results.data.length - 1];
-
-      // 获取数据
-      if (regItem && true !== regItem) {
-          if ('file' === regItem.active) {
-              data = fs.readFileSync(regItem.file).toString();
-          }
-          else {
-              data = regItem[regItem.active || 'ok'] || regItem;
-              data = typeof data === 'function'
-                  ? data.call(
-                      Object.assign(
-                          {},
-                          resData,
-                          {
-                              Mock: Mock,
-                              mock: Mock.mock,
-                              Random: Mock.Random
-                          }
-                      ),
-                      Mock, {postData: resData.postData, formData: resData.formData}
-                  )
-                  : data;
-          }
-      }
-      else {
-          data = regItem;
-      }
-
-      resData.resultData = toHtml(data);
-      resData.resultData.test = true;
-      return data;
   };
 
   // 获取请求响应数据
@@ -229,7 +121,7 @@ module.exports = (app, server, staticPath) => {
   // 打开调式页面
   router.get('/debug', cxt => {
     cxt.set('Content-Type', 'text/html');
-    cxt.body = fs.readFileSync(resolveApp('server', 'debug.html'));
+    cxt.body = fse.readFileSync(resolveApp('server', 'debug.html'));
   });
 
   const api = require(apiPath);
@@ -344,7 +236,8 @@ module.exports = (app, server, staticPath) => {
         results.add({
           req: cxt.req,
           reqBody: cxt.reqBody,
-          resBody: cxt.body
+          resBody: cxt.body,
+          from: 'server'
         });
       });
     }
