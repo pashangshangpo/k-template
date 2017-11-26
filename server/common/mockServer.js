@@ -68,20 +68,16 @@ module.exports = (app, server, staticPath) => {
   // 收集信息
   let results = {
       data: [],
-      add: ({req, postData = null, formData = null, res} = data) => {
-          let url = urlTo.parse(req.reqUrl);
-
+      add: ({req, reqBody, resBody} = data) => {
           results.data.push({
-              requestInfo: {
-                  url: url.href,
-                  urlParse: url,
-                  method: req.method
-              },
-              query: querystring.parse(url.query),
-              postData: postData,
-              formData: formData,
-              resultData: res
+              method: req.method,
+              url: req.url,
+              query: querystring.parse(urlTo.parse(req.url).query),
+              reqBody: reqBody,
+              resBody: resBody
           });
+
+          // console.log(123, results.data);
       },
       clear: () => {
           results.data.length = 0;
@@ -233,11 +229,8 @@ module.exports = (app, server, staticPath) => {
 
   // 打开调式页面
   router.get('/debug', cxt => {
-    let req = cxt.request;
-    let res = cxt.response;
-
-    res.set('Content-Type', 'text/html');
-    res.body = fs.readFileSync(path.join(path.resolve('.'), 'server', 'debug.html'));
+    cxt.set('Content-Type', 'text/html');
+    cxt.body = fs.readFileSync(resolveApp('server', 'debug.html'));
   });
 
   const api = require(apiPath);
@@ -260,30 +253,57 @@ module.exports = (app, server, staticPath) => {
       method = method.toLowerCase();
 
       if (typeof val === 'function') {
-        router[method](url, cxt => {
-          getData(cxt.req).then(res => {
-            console.log(res);
-          });
-
+        router[method](url, async cxt => {
           // 暴露一些常用方法给用户
           cxt.query = querystring.parse(urlTo.parse(cxt.url).query);
           cxt.Mock = Mock;
           cxt.mock = Mock.mock;
           cxt.Random = Mock.Random;
 
-          val(cxt);
+          await getData(cxt.req).then(res => {
+            cxt.reqBody = res;
+          });
+
+          // 等待用户配置的返回,防止用户在函数中使用了异步的操作
+          await val(cxt);
+
+          results.add({
+            req: cxt.req,
+            reqBody: cxt.reqBody,
+            resBody: cxt.body
+          });
         });
       }
       else if (typeof val === 'object') {
-        router[method](url, cxt => {
+        router[method](url, async cxt => {
+          await getData(cxt.req).then(res => {
+            cxt.reqBody = res;
+          });
+
           cxt.body = val;
+
+          results.add({
+            req: cxt.req,
+            reqBody: cxt.reqBody,
+            resBody: cxt.body
+          });
         });
       }
       // 转发到服务器
       else if (typeof val === 'string') {
         router[method](url, async cxt => {
+          getData(cxt.req).then(res => {
+            cxt.reqBody = res;
+          });
+
           await requestServer(val, cxt.req).then(res => {
             cxt.body = res;
+
+            results.add({
+              req: cxt.req,
+              reqBody: cxt.reqBody,
+              resBody: cxt.body
+            });
           });
         });
       }
@@ -316,11 +336,14 @@ module.exports = (app, server, staticPath) => {
       url = joinStr(apiConfig.server, url);
 
       await requestServer(url, cxt.req).then(res => {
-        // resultData.res = res;
-        // results.add(resultData);
-        // emitData();
-
+        console.log(res);
         cxt.body = res;
+
+        results.add({
+          req: cxt.req,
+          reqBody: cxt.reqBody,
+          resBody: cxt.body
+        });
       });
     }
     else {

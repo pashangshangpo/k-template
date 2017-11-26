@@ -2,7 +2,7 @@ module.exports = {
   config: {
     open: true,
     cookie: '',
-    server: 'http://www.xxx.com'
+    server: 'http://www.jianshu.com/'
   },
   request: {
     'get /api/get': ctx => {
@@ -24,6 +24,7 @@ module.exports = {
         user: cxt.params.id,
         query: cxt.query
       };
-    }
+    },
+    '/notes/20183954/side_tool': 'http://www.jianshu.com/notes/20183954/side_tool'
   }
 };
