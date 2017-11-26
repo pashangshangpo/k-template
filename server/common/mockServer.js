@@ -167,13 +167,11 @@ module.exports = (app, server, staticPath) => {
           if (re.headers['content-type'] && -1 !== re.headers['content-type'].indexOf('multipart/form-data')) {
               let form = new multiparty.Form();
               form.parse(re, (err, fields, files) => {
-                  resolve({
-                      postData: null,
-                      formData: {
-                          fields,
-                          files
-                      }
-                  });
+                  resolve(Object.assign(
+                    {},
+                    fields,
+                    files
+                  ));
               });
           }
           else {
@@ -183,10 +181,7 @@ module.exports = (app, server, staticPath) => {
 
               re.on('data', chunk => data.push(chunk));
               re.on('end', () => {
-                  resolve({
-                      postData: isTo ? Buffer.concat(data).toString() : Buffer.concat(data),
-                      formData: {}
-                  });
+                  resolve(isTo ? Buffer.concat(data).toString() : Buffer.concat(data));
               });
           }
       });
@@ -266,6 +261,10 @@ module.exports = (app, server, staticPath) => {
 
       if (typeof val === 'function') {
         router[method](url, cxt => {
+          getData(cxt.req).then(res => {
+            console.log(res);
+          });
+
           // 暴露一些常用方法给用户
           cxt.query = querystring.parse(urlTo.parse(cxt.url).query);
           cxt.Mock = Mock;

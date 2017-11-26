@@ -5,6 +5,10 @@ export default class Index extends Component {
     return (
       <div>
         Index page
+        <form id="fr">
+          <input type="file" name="f" />
+          <input type="text" name="t" />
+        </form>
       </div>
     );
   }
