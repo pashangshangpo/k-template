@@ -77,7 +77,7 @@ module.exports = (app, server, staticPath) => {
               resBody: resBody
           });
 
-          // console.log(123, results.data);
+          console.log(results.data);
       },
       clear: () => {
           results.data.length = 0;
@@ -210,10 +210,8 @@ module.exports = (app, server, staticPath) => {
               },
               (result, req) => {
                   getData(result).then(data => {
-                      data = data.postData;
-
                       try {
-                          data = JSON.parse(data.postData);
+                          data = JSON.parse(data);
                       }
                       catch (err) {
                       }
@@ -335,8 +333,11 @@ module.exports = (app, server, staticPath) => {
     if (!fse.existsSync(path)) {
       url = joinStr(apiConfig.server, url);
 
+      getData(cxt.req).then(res => {
+        cxt.reqBody = res;
+      });
+
       await requestServer(url, cxt.req).then(res => {
-        console.log(res);
         cxt.body = res;
 
         results.add({
