@@ -1,12 +1,4 @@
 body {
     font-size: 16px;
-    background: pink;
-}
-
-div {
-    position: relative;
-    float: left;
-    width: calc(100% / 4.1 - 12px * 3 / 4);
-    height: 68px;
-    margin-top: 12px;
+    background: url("../images/www.baidu.com_.png");
 }

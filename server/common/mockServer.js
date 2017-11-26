@@ -1,5 +1,6 @@
 const urlTo = require('url');
 const http = require('http');
+const mime = require('mime');
 const fse = require('fs-extra');
 const querystring = require('querystring');
 const {join} = require('path');
@@ -348,109 +349,21 @@ module.exports = (app, server, staticPath) => {
       });
     }
     else {
-      cxt.set('Content-type', cxt.header.accept);
-      cxt.body = fse.readFileSync(path).toString();
+      let type = 'text/plain';
+      try {
+        type = mime.lookup(path);
+      }
+      catch (err) {}
+
+      // 低版本ie浏览器不认识application/javascript, 会当成文件来下载
+      if (type === 'application/javascript') {
+        type = 'text/plain';
+      }
+
+      cxt.set('Content-type', type);
+      cxt.body = fse.readFileSync(path);
     }
   });
-
-  // 转发API请求
-//   router.all('/api/*', async cxt => {
-//     delete require.cache[apiPath];
-//     const api = require(apiPath);
-//     const apiConfig = api.config;
-//     const apiRequest = api.request;
-
-//     let req = cxt.req;
-//     let res = cxt.res;
-//     let koaReq = cxt.request;
-//     let koaRes = cxt.response;
-//     let reqUrl = `http://${koaReq.header.host}${koaReq.url}`;
-
-//     req.reqUrl = reqUrl;
-
-//     if (openCross(koaReq, koaRes)) {
-//       return false;
-//     }
-//     else {
-//       let url = urlTo.parse(reqUrl);
-//       let regPathResult = null;
-//       let resultData = {
-//         req: req,
-//         postData: null,
-//         formData: null,
-//         res: null
-//       };
-
-//       await new Promise(async rej => {
-//         let data = '';
-
-//         if ((regPathResult = regPath(apiRequest, url.pathname))
-//           && false !== apiConfig.open
-//         ) {
-//           // 获取请求数据
-//           await getData(req).then(data => {
-//             resultData.postData = data.postData;
-//             resultData.formData = data.formData;
-//           });
-
-//           results.add(resultData);
-//           data = requestLocalData(regPathResult.data);
-//         }
-//         else {
-//           // 获取请求数据
-//           getData(req).then(data => {
-//             resultData.postData = data.postData;
-//             resultData.formData = data.formData;
-//           });
-
-//           // 处理url
-//           let serverUrl = '';
-//           if (apiConfig.testServer) {
-//             if ('/' === apiConfig.testServer.slice(-1)) {
-//               apiConfig.testServer = apiConfig.testServer.slice(0, -1);
-//             }
-
-//             serverUrl = [apiConfig.testServer, url.path].join('');
-//           }
-//           else {
-//             serverUrl = reqUrl;
-//           }
-
-//           req.reqUrl = serverUrl;
-//           data = await requestServer(serverUrl, req).then(res => {
-//             resultData.res = res;
-//             results.add(resultData);
-//             return res;
-//           });
-//         }
-
-//         rej(data);
-//       }).then(async data => {
-//         // 延时返回
-//         await new Promise(resolve => {
-//           let delay = Math.random() * 2 * 800;
-//           if (apiConfig.delay) {
-//             if ('function' === typeof apiConfig.delay) {
-//               delay = apiConfig.delay();
-//             }
-//             else {
-//               delay = apiConfig.delay;
-//             }
-//           }
-
-//           setTimeout(
-//             () => {
-//               resolve();
-//             },
-//             delay
-//           );
-//         }).then(() => {
-//           koaRes.body = data;
-//           emitData();
-//         });
-//       });
-//     }
-//   });
 
   app.use(router.routes());
 };
