@@ -6,3 +6,4 @@ temp/
 yarn-error.log
 .vscode/
 dist/
+.history/
