@@ -280,6 +280,14 @@ module.exports = (app, server, staticPath) => {
           cxt.body = val;
         });
       }
+      // 转发到服务器
+      else if (typeof val === 'string') {
+        router[method](url, async cxt => {
+          await requestServer(val, cxt.req).then(res => {
+            cxt.body = res;
+          });
+        });
+      }
     });
   };
 

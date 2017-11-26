@@ -2,7 +2,7 @@ module.exports = {
   config: {
     open: true,
     cookie: '',
-    server: 'http://www.jianshu.com'
+    server: 'http://www.xxx.com'
   },
   request: {
     'get /api/get': ctx => {
