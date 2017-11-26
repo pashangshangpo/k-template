@@ -7,14 +7,12 @@ const router = new Router();
 const {getIp} = require('../util/util');
 const mockServer = require('../common/mockServer');
 
-module.exports = (port, rou) => {
+module.exports = (port, outputPath) => {
     // 服务
     let server = http.createServer(app.callback());
     
     // 转发请求
-    mockServer(app, server);
-
-    app.use(rou(router).routes());
+    mockServer(app, server, outputPath);
 
     server.listen(port, () => {
         // 获取局域网ip

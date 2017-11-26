@@ -135,5 +135,10 @@ module.exports = {
       });
     }
     catch (err) {}
+  },
+  each: (obj, func) => {
+    for (let key in obj) {
+      func(obj[key], key);
+    }
   }
 };

@@ -1,16 +1,17 @@
 const urlTo = require('url');
 const http = require('http');
-const fs = require('fs');
+const fse = require('fs-extra');
 const querystring = require('querystring');
-const path = require('path');
+const {join} = require('path');
 const multiparty = require('multiparty');
 const Router = require('koa-router');
 const router = new Router();
 const prettyHtml = require('json-pretty-html').default;
 const Mock = require('mockjs');
-const {apiPath} = require('../../config/paths');
+const {apiPath, resolveApp} = require('../../config/paths');
+const {each, joinStr} = require('../util/util');
 
-module.exports = (app, server) => {
+module.exports = (app, server, staticPath) => {
   const io = require('socket.io')(server);
 
   // 监听socket请求
@@ -244,104 +245,181 @@ module.exports = (app, server) => {
     res.body = fs.readFileSync(path.join(path.resolve('.'), 'server', 'debug.html'));
   });
 
-  // 转发API请求
-  router.all('/api/*', async cxt => {
-    delete require.cache[apiPath];
-    const api = require(apiPath);
-    const apiConfig = api.config;
-    const apiRequest = api.request;
+  const api = require(apiPath);
+  const apiConfig = api.config;
+  const apiRequest = api.request;
 
-    let req = cxt.req;
-    let res = cxt.res;
-    let koaReq = cxt.request;
-    let koaRes = cxt.response;
-    let reqUrl = `http://${koaReq.header.host}${koaReq.url}`;
+  // 请求本地数据
+  const requestLocal = api => {
+    // 遍历request规则
+    each(api, (val, key) => {
+      // 提取method,url
+      let arr = key.split(' ');
+      let method = arr[0];
+      let url = arr[1];
+      if (!url) {
+          url = method;
+          method = 'all';
+      }
 
-    req.reqUrl = reqUrl;
+      method = method.toLowerCase();
 
-    if (openCross(koaReq, koaRes)) {
-      return false;
+      if (typeof val === 'function') {
+        router[method](url, cxt => {
+          // 暴露一些常用方法给用户
+          cxt.query = querystring.parse(urlTo.parse(cxt.url).query);
+          cxt.Mock = Mock;
+          cxt.mock = Mock.mock;
+          cxt.Random = Mock.Random;
+
+          val(cxt);
+        });
+      }
+      else if (typeof val === 'object') {
+        router[method](url, cxt => {
+          cxt.body = val;
+        });
+      }
+    });
+  };
+
+  // 如果开启拦截或未设置则请求本地数据
+  if (apiConfig.open !== false) {
+    requestLocal(apiRequest);
+  }
+
+  /**
+   * 如果开启了拦截则先跑用户写的规则,
+   * 如果规则不存在则尝试当成是获取本地文件,
+   * 如果本地文件也不存在则到服务器中获取
+   */
+  router.all('*', async cxt => {
+    let url = cxt.url;
+    let path = '';
+    if (url === '/' || url === '') {
+      path = '/index.html';
     }
     else {
-      let url = urlTo.parse(reqUrl);
-      let regPathResult = null;
-      let resultData = {
-        req: req,
-        postData: null,
-        formData: null,
-        res: null
-      };
+      path = url;
+    }
 
-      await new Promise(async rej => {
-        let data = '';
+    path = resolveApp(staticPath, path);
 
-        if ((regPathResult = regPath(apiRequest, url.pathname))
-          && false !== apiConfig.open
-        ) {
-          // 获取请求数据
-          await getData(req).then(data => {
-            resultData.postData = data.postData;
-            resultData.formData = data.formData;
-          });
+    if (!fse.existsSync(path)) {
+      url = joinStr(apiConfig.server, url);
 
-          results.add(resultData);
-          data = requestLocalData(regPathResult.data);
-        }
-        else {
-          // 获取请求数据
-          getData(req).then(data => {
-            resultData.postData = data.postData;
-            resultData.formData = data.formData;
-          });
+      await requestServer(url, cxt.req).then(res => {
+        // resultData.res = res;
+        // results.add(resultData);
+        // emitData();
 
-          // 处理url
-          let serverUrl = '';
-          if (apiConfig.testServer) {
-            if ('/' === apiConfig.testServer.slice(-1)) {
-              apiConfig.testServer = apiConfig.testServer.slice(0, -1);
-            }
-
-            serverUrl = [apiConfig.testServer, url.path].join('');
-          }
-          else {
-            serverUrl = reqUrl;
-          }
-
-          req.reqUrl = serverUrl;
-          data = await requestServer(serverUrl, req).then(res => {
-            resultData.res = res;
-            results.add(resultData);
-            return res;
-          });
-        }
-
-        rej(data);
-      }).then(async data => {
-        // 延时返回
-        await new Promise(resolve => {
-          let delay = Math.random() * 2 * 800;
-          if (apiConfig.delay) {
-            if ('function' === typeof apiConfig.delay) {
-              delay = apiConfig.delay();
-            }
-            else {
-              delay = apiConfig.delay;
-            }
-          }
-
-          setTimeout(
-            () => {
-              resolve();
-            },
-            delay
-          );
-        }).then(() => {
-          koaRes.body = data;
-          emitData();
-        });
+        cxt.body = res;
       });
     }
+    else {
+      cxt.set('Content-type', cxt.header.accept);
+      cxt.body = fse.readFileSync(path).toString();
+    }
   });
+
+  // 转发API请求
+//   router.all('/api/*', async cxt => {
+//     delete require.cache[apiPath];
+//     const api = require(apiPath);
+//     const apiConfig = api.config;
+//     const apiRequest = api.request;
+
+//     let req = cxt.req;
+//     let res = cxt.res;
+//     let koaReq = cxt.request;
+//     let koaRes = cxt.response;
+//     let reqUrl = `http://${koaReq.header.host}${koaReq.url}`;
+
+//     req.reqUrl = reqUrl;
+
+//     if (openCross(koaReq, koaRes)) {
+//       return false;
+//     }
+//     else {
+//       let url = urlTo.parse(reqUrl);
+//       let regPathResult = null;
+//       let resultData = {
+//         req: req,
+//         postData: null,
+//         formData: null,
+//         res: null
+//       };
+
+//       await new Promise(async rej => {
+//         let data = '';
+
+//         if ((regPathResult = regPath(apiRequest, url.pathname))
+//           && false !== apiConfig.open
+//         ) {
+//           // 获取请求数据
+//           await getData(req).then(data => {
+//             resultData.postData = data.postData;
+//             resultData.formData = data.formData;
+//           });
+
+//           results.add(resultData);
+//           data = requestLocalData(regPathResult.data);
+//         }
+//         else {
+//           // 获取请求数据
+//           getData(req).then(data => {
+//             resultData.postData = data.postData;
+//             resultData.formData = data.formData;
+//           });
+
+//           // 处理url
+//           let serverUrl = '';
+//           if (apiConfig.testServer) {
+//             if ('/' === apiConfig.testServer.slice(-1)) {
+//               apiConfig.testServer = apiConfig.testServer.slice(0, -1);
+//             }
+
+//             serverUrl = [apiConfig.testServer, url.path].join('');
+//           }
+//           else {
+//             serverUrl = reqUrl;
+//           }
+
+//           req.reqUrl = serverUrl;
+//           data = await requestServer(serverUrl, req).then(res => {
+//             resultData.res = res;
+//             results.add(resultData);
+//             return res;
+//           });
+//         }
+
+//         rej(data);
+//       }).then(async data => {
+//         // 延时返回
+//         await new Promise(resolve => {
+//           let delay = Math.random() * 2 * 800;
+//           if (apiConfig.delay) {
+//             if ('function' === typeof apiConfig.delay) {
+//               delay = apiConfig.delay();
+//             }
+//             else {
+//               delay = apiConfig.delay;
+//             }
+//           }
+
+//           setTimeout(
+//             () => {
+//               resolve();
+//             },
+//             delay
+//           );
+//         }).then(() => {
+//           koaRes.body = data;
+//           emitData();
+//         });
+//       });
+//     }
+//   });
 
   app.use(router.routes());
 };
