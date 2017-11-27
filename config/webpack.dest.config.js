@@ -47,6 +47,9 @@ module.exports = (outputPath, publicPath) => {
       new webpack.optimize.UglifyJsPlugin({
         compress: {
           warnings: false,
+          drop_console: true,
+          collapse_vars: true,
+          reduce_vars: true
         },
         output: {
           comments: false,

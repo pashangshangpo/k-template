@@ -14,6 +14,7 @@ module.exports = {
       },
       {
         test: /\.(png|svg|jpg|gif)/,
+        exclude: /(node_modules|bower_components)/,
         use: [
           {
             loader: 'url-loader',
