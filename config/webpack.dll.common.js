@@ -1,7 +1,18 @@
+const {resolveApp} = require('./paths');
+const packageJson = require(resolveApp('package.json'));
+const dependencies = packageJson.dependencies;
+// 提取key
+// const result = {};
+// for (let key in dependencies) {
+//   if (dependencies.hasOwnProperty(key)) {
+//     result[key] = [key];
+//   }
+// }
+
+console.log(result);
 module.exports = {
   entry: {
-    react: ['react', 'react-dom'],
-    router: ['react-router', 'react-router-dom'],
-    mobx: ['mobx', 'mobx-react']
+    main: Object.keys(packageJson.dependencies)
   }
 };
+
