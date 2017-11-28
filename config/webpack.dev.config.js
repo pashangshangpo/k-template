@@ -68,7 +68,7 @@ module.exports = (outputPath, publicPath) => {
         path: outputPath,
         publicPath: publicPath
     },
-    devtool: 'inline-source-map',
+    devtool: 'source-map',
     plugins: [
       // 提取css
       new ExtractTextPlugin(cssPath),
