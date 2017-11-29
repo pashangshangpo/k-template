@@ -156,7 +156,10 @@ const isDll = () => {
     return false;
   }
   else {
-    fse.mkdirSync(tempPath);
+    if (!fse.existsSync(tempPath)) {
+      fse.mkdirSync(tempPath);
+    }
+
     fse.copySync(packagePath, prePackagePath);
 
     return true;

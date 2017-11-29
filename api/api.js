@@ -1,6 +1,7 @@
 module.exports = {
   config: {
     open: true,
+    delay: 0,
     cookie: '',
     server: 'http://www.xx.com/'
   },
