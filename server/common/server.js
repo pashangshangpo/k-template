@@ -7,7 +7,7 @@ const router = new Router();
 const {getIp} = require('../util/util');
 const mockServer = require('../common/mockServer');
 
-module.exports = (port, outputPath) => {
+module.exports = (port, outputPath, autoOpenBrowser) => {
     // 服务
     let server = http.createServer(app.callback());
     
@@ -23,6 +23,8 @@ module.exports = (port, outputPath) => {
         console.log(`See request info => ${url}/debug`);
 
         // 打开浏览器
-        openbrowser(url);
+        if (autoOpenBrowser) {
+          openbrowser(url);
+        }
     });
 };

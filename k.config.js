@@ -5,6 +5,7 @@ module.exports = {
     ]
   },
   move: ['src/font'],
+  autoOpenBrowser: true,
   env: {
     dest: {
       publicPath: '/',

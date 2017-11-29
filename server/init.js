@@ -50,7 +50,8 @@ const config = {
       // 合并inject      
       inject: merge(kConfig.inject, envConfig.inject),
       // 合并move
-      move: merge({move: []}, {move: kConfig.move}, {move: envConfig.move}).move
+      move: merge({move: []}, {move: kConfig.move}, {move: envConfig.move}).move,
+      autoOpenBrowser: kConfig.autoOpenBrowser
     };
   }
 };
@@ -74,12 +75,13 @@ if (!program.env) {
 const userPort = Math.ceil(program.port);
 
 // 启动服务
-const runServer = (devServerPath, port, webpackDevPath, outputPath, publicPath, inject) => {
+const runServer = (devServerPath, port, webpackDevPath, outputPath, publicPath, inject, autoOpenBrowser) => {
   console.log('正在为您启动本地服务...');  
   require(devServerPath)({
     port,
     webpackConfig: require(webpackDevPath)(outputPath, publicPath),
-    inject
+    inject,
+    autoOpenBrowser
   });
 };
 
@@ -134,10 +136,10 @@ const runDest = (currentConfig, func = () => {}) => {
 };
 
 // destServer
-const destServer = (port, outputPath) => {
+const destServer = (port, outputPath, autoOpenBrowser) => {
   console.log('正在为您启动本地服务...');
 
-  require('../server/common/server')(port, outputPath);
+  require('../server/common/server')(port, outputPath, autoOpenBrowser);
 };
 
 // 判断是否需要打包dll文件
@@ -177,14 +179,14 @@ if (server || type === 'server') {
 
     // 编译
     if (type === 'build') {
-      runDest(currentConfig, destServer.bind(null, port, currentConfig.outputPath));
+      runDest(currentConfig, destServer.bind(null, port, currentConfig.outputPath, currentConfig.autoOpenBrowser));
     }
     // 判断是否编译过
     else if (!fse.existsSync(resolveApp(currentConfig.outputPath))) {
       console.log('启动服务失败,请先[yarn|npm] build');
     }
     else {
-      destServer(port, currentConfig.outputPath);
+      destServer(port, currentConfig.outputPath, currentConfig.autoOpenBrowser);
     }
   });
 }
@@ -201,11 +203,27 @@ else if (type === 'start') {
     // 判断dll是否有更新,并且之前打包过的目录存在
     if (isDll() || !fse.existsSync(currentConfig.outputPath)) {
       runDll(require(webpackDevDllPath)(currentConfig.outputPath), () => {
-        runServer(devServerPath, port, webpackDevPath, currentConfig.outputPath, currentConfig.publicPath, currentConfig.inject);
+        runServer(
+          devServerPath, 
+          port, 
+          webpackDevPath, 
+          currentConfig.outputPath, 
+          currentConfig.publicPath, 
+          currentConfig.inject,
+          currentConfig.autoOpenBrowser
+        );
       });
     }
     else {
-      runServer(devServerPath, port, webpackDevPath, currentConfig.outputPath, currentConfig.publicPath, currentConfig.inject);
+      runServer(
+        devServerPath, 
+        port, 
+        webpackDevPath, 
+        currentConfig.outputPath, 
+        currentConfig.publicPath, 
+        currentConfig.inject,
+        currentConfig.autoOpenBrowser
+      );
     }
   });
 }

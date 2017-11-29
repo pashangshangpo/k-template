@@ -22,7 +22,7 @@ let {
 } = require('../config/paths');
 const dllEntry = require(webpackDllCommonPath).entry;
 
-module.exports = ({port, webpackConfig, inject = {}} = config) => {
+module.exports = ({port, webpackConfig, inject = {}, autoOpenBrowser} = config) => {
   const entry = webpackConfig.entry;
   const outputPath = webpackConfig.output.path;
   const publicPath = webpackConfig.output.publicPath;
@@ -126,6 +126,8 @@ module.exports = ({port, webpackConfig, inject = {}} = config) => {
     console.log(`See request info => ${url}/debug`);
 
     // 打开浏览器
-    openbrowser(url);
+    if (autoOpenBrowser) {
+      openbrowser(url);
+    }
   });
 };
