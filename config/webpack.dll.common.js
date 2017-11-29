@@ -1,7 +1,8 @@
+const {resolveApp} = require('./paths');
+const packageJson = require(resolveApp('package.json'));
+
 module.exports = {
   entry: {
-    react: ['react', 'react-dom'],
-    router: ['react-router', 'react-router-dom'],
-    mobx: ['mobx', 'mobx-react']
+    vendor: Object.keys(packageJson.dependencies)
   }
 };
