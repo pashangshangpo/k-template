@@ -28,19 +28,19 @@ const packagePath = resolveApp(packageName);
 // 配置
 const config = {
   envDefault: {
-    test: 'dest',
-    server: 'dev',
-    build: 'dest'
+    start: 'dev',
+    build: 'dest',
+    server: 'dest'
   },
   getEnVConfig: (envConfig, type, env) => {
     let outputPath = '';
     let inject = envConfig.inject;
 
-    if (type === 'server') {
+    if (type === 'start') {
       // 开发环境不走配置,直接打到dev目录下
       outputPath = join('dev', env);
     }
-    else if (type === 'build' || type === 'test') {
+    else if (type === 'build' || type === 'server') {
       // 不指定输出目录则输出到dist目录下
       outputPath = envConfig.outputPath || join('dist', env);
     }
@@ -61,11 +61,10 @@ const config = {
 program
 .version('0.0.1')
 .description('一个快速搭建Webpack环境工具')
-.option('-t, --type [type]', '运行环境类型,server,build,test')
+.option('-t, --type [type]', '你要执行的命令是?如:start,build,server')
 .option('-p, --port [port]', `端口`, defaultPort)
 .option('-e, --env [env]', '上下文环境')
-.option('-d, --dll [dll]', '打包公共包', false)
-.option('-s, --server [server]', '启服务')
+.option('-s, --server [server]', '生产环境起服务,调试')
 .parse(process.argv);
 
 // 参数判断
@@ -107,20 +106,8 @@ const runDest = (currentConfig, func = () => {}) => {
   // 删除之前编译出来的数据,但不删除.git目录
   removeFile(resolveApp(currentConfig.outputPath), ['.git']);
 
-  console.log('正在编译中...');
-  if (isDll()) {
-    runDll(require(webpackDestDllPath)(currentConfig.outputPath), () => {
-      runBuild(
-        destServerPath,
-        webpackDestPath,
-        currentConfig.outputPath,
-        currentConfig.publicPath,
-        currentConfig.inject,
-        func
-      );
-    });
-  }
-  else {
+  runDll(require(webpackDestDllPath)(currentConfig.outputPath), () => {
+    console.log('正在编译中...');  
     runBuild(
       destServerPath,
       webpackDestPath,
@@ -129,7 +116,7 @@ const runDest = (currentConfig, func = () => {}) => {
       currentConfig.inject,
       func
     );
-  }
+  });
 };
 
 // destServer
@@ -139,7 +126,7 @@ const destServer = (port, outputPath) => {
   require('../server/common/server')(port, outputPath);
 };
 
-let {type, env, dll, server} = program;
+let {type, env, server} = program;
 
   // 判断是否需要打包dll文件
 const isDll = () => {
@@ -166,7 +153,7 @@ const isDll = () => {
 const currentConfig = config.getEnVConfig(kConfig.env[env], type, env);
 
 // 生产环境起服务
-if (server || type === 'test') {
+if (server || type === 'server') {
   portIsOccupied(userPort, true, port => {
     if (port !== userPort && userPort !== defaultPort) {
       console.log('您输入的端口', userPort ,'被占用,重新为您分配了一个端口:', port);
@@ -186,7 +173,7 @@ if (server || type === 'test') {
   });
 }
 // 开发环境
-else if (type === 'server') {
+else if (type === 'start') {
   currentConfig.outputPath = resolveApp(currentConfig.outputPath);
 
   // 判断端口是否被占用
@@ -195,7 +182,8 @@ else if (type === 'server') {
       console.log('您输入的端口', userPort ,'被占用,重新为您分配了一个端口:', port);
     }
 
-    if (isDll()) {
+    // 判断dll是否有更新,并且之前打包过的目录存在
+    if (isDll() || !fse.existsSync(currentConfig.outputPath)) {
       runDll(require(webpackDevDllPath)(currentConfig.outputPath), () => {
         runServer(devServerPath, port, webpackDevPath, currentConfig.outputPath, currentConfig.publicPath, currentConfig.inject);
       });
