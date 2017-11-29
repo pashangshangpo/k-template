@@ -115,7 +115,7 @@ module.exports = ({port, webpackConfig, inject = {}, autoOpenBrowser} = config) 
   let server = http.createServer(app.callback());
   
   // 转发请求
-  mockServer(app, server);
+  mockServer(app, server, outputPath);
   
   server.listen(port, () => {
     // 获取局域网ip

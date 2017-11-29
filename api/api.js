@@ -6,20 +6,20 @@ module.exports = {
   },
   request: {
     'get /api/get': ctx => {
-      ctx.body = {
+      return {
         status: 'ok',
         data: 'get'
       };
     },
     '/api/all': ctx => {
-      ctx.body = {
+      return {
           status: 'ok',
           data: 'all'
       };
     },
     '/api/json': {json: 111},
     '/api/user/:id': cxt => {
-      cxt.body = {
+       return {
         status: 'ok',
         user: cxt.params.id,
         query: cxt.query

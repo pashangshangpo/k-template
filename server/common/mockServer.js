@@ -128,6 +128,19 @@ module.exports = (app, server, staticPath) => {
   const apiConfig = api.config;
   const apiRequest = api.request;
 
+  // 数据返回之后先进行其他处理再返回
+  const resThen = async () => {
+    const delay = apiConfig.delay;
+
+    if (delay) {
+      await new Promise(resolve => {
+        setTimeout(() => {
+          resolve();
+        }, delay);
+      });
+    }
+  };
+
   // 请求本地数据
   const requestLocal = api => {
     // 遍历request规则
@@ -156,8 +169,11 @@ module.exports = (app, server, staticPath) => {
           });
 
           // 等待用户配置的返回,防止用户在函数中使用了异步的操作
-          await val(cxt);
+          const res = await val(cxt);
 
+          await resThen();
+
+          cxt.body = res;
           results.add({
             req: cxt.req,
             reqBody: cxt.reqBody,
@@ -171,8 +187,9 @@ module.exports = (app, server, staticPath) => {
             cxt.reqBody = res;
           });
 
-          cxt.body = val;
+          await resThen();
 
+          cxt.body = val;
           results.add({
             req: cxt.req,
             reqBody: cxt.reqBody,
@@ -187,9 +204,10 @@ module.exports = (app, server, staticPath) => {
             cxt.reqBody = res;
           });
 
-          await requestServer(val, cxt.req).then(res => {
-            cxt.body = res;
+          await requestServer(val, cxt.req).then(async res => {
+            await resThen();
 
+            cxt.body = res;
             results.add({
               req: cxt.req,
               reqBody: cxt.reqBody,
@@ -214,6 +232,7 @@ module.exports = (app, server, staticPath) => {
   router.all('*', async cxt => {
     let url = cxt.url;
     let path = '';
+
     if (url === '/' || url === '') {
       path = '/index.html';
     }
@@ -230,9 +249,10 @@ module.exports = (app, server, staticPath) => {
         cxt.reqBody = res;
       });
 
-      await requestServer(url, cxt.req).then(res => {
-        cxt.body = res;
+      await requestServer(url, cxt.req).then(async res => {
+        await resThen();
 
+        cxt.body = res;
         results.add({
           req: cxt.req,
           reqBody: cxt.reqBody,
