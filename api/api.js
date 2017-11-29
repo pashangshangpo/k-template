@@ -2,8 +2,10 @@ module.exports = {
   config: {
     open: true,
     delay: 0,
-    cookie: '',
-    server: 'http://www.xx.com/'
+    cookie: request => {
+      // request
+    },
+    server: 'http://www.ilingdai.com'
   },
   request: {
     'get /api/get': ctx => {
