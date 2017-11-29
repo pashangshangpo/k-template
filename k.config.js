@@ -4,6 +4,7 @@ module.exports = {
       './src/index.js'
     ]
   },
+  move: ['src/font'],
   env: {
     dest: {
       publicPath: '/',
@@ -12,6 +13,7 @@ module.exports = {
     dev: {
       publicPath: '/',
       outputPath: 'dist/dev',
+      move: ['src/dev'],
       inject: {
         js: [
           function () {

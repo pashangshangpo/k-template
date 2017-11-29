@@ -34,8 +34,6 @@ const config = {
   },
   getEnVConfig: (envConfig, type, env) => {
     let outputPath = '';
-    let inject = envConfig.inject;
-
     if (type === 'start') {
       // 开发环境不走配置,直接打到dev目录下
       outputPath = join('dev', env);
@@ -45,14 +43,14 @@ const config = {
       outputPath = envConfig.outputPath || join('dist', env);
     }
 
-    // 合并inject
-    inject = merge(kConfig.inject, inject);
-
     return {
       entry: kConfig.entry,
       outputPath: outputPath,
       publicPath: envConfig.publicPath || '/',
-      inject
+      // 合并inject      
+      inject: merge(kConfig.inject, envConfig.inject),
+      // 合并move
+      move: merge({move: []}, {move: kConfig.move}, {move: envConfig.move}).move
     };
   }
 };
@@ -94,6 +92,22 @@ const runBuild = (destServerPath, webpackDestPath, outputPath, publicPath, injec
   });
 };
 
+// 平移文件
+const moveFile = (moveList, movePath) => {
+  moveList.forEach(path => {
+    path = resolveApp(path);
+    let moveToPath = resolveApp(movePath, path.split('/').pop());
+
+    // 平移之前清空文件夹
+    if (fse.existsSync(moveToPath)) {
+      fse.emptyDirSync(moveToPath);
+    }
+    if (fse.existsSync(path)) {
+      fse.copySync(path, moveToPath);
+    }
+  });
+};
+
 // 打包dll
 const runDll = (webpackDllConfig, func = (() => {})) => {
   console.log('正在为您构建dll文件...');  
@@ -107,7 +121,7 @@ const runDest = (currentConfig, func = () => {}) => {
   removeFile(resolveApp(currentConfig.outputPath), ['.git']);
 
   runDll(require(webpackDestDllPath)(currentConfig.outputPath), () => {
-    console.log('正在编译中...');  
+    console.log('正在编译中...');
     runBuild(
       destServerPath,
       webpackDestPath,
@@ -126,9 +140,7 @@ const destServer = (port, outputPath) => {
   require('../server/common/server')(port, outputPath);
 };
 
-let {type, env, server} = program;
-
-  // 判断是否需要打包dll文件
+// 判断是否需要打包dll文件
 const isDll = () => {
   let prePackagePath = resolveApp(tempPath, packageName);
 
@@ -149,8 +161,12 @@ const isDll = () => {
   }
 };
 
+let {type, env, server} = program;
+
 // 当前配置
 const currentConfig = config.getEnVConfig(kConfig.env[env], type, env);
+
+moveFile(currentConfig.move, currentConfig.outputPath);
 
 // 生产环境起服务
 if (server || type === 'server') {
