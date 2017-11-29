@@ -65,8 +65,6 @@ const manifestName = 'manifest.json';
 
 // tempPath
 const tempPath = resolveApp('temp');
-// fileTimePath
-const fileTimePath = join(tempPath, 'filetime.json');
 
 // k.config.js
 const kConfigPath = join(configPath, 'k.config.js');
@@ -93,7 +91,6 @@ module.exports = {
   dllPath,
   commonJsName,
   tempPath,
-  fileTimePath,
   kConfigPath,
   userKConfigPath,
   devClientPath,

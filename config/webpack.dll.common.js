@@ -3,6 +3,6 @@ const packageJson = require(resolveApp('package.json'));
 
 module.exports = {
   entry: {
-    main: Object.keys(packageJson.dependencies)
+    vendor: Object.keys(packageJson.dependencies)
   }
 };

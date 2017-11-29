@@ -17,7 +17,6 @@ let {
   devServerPath,
   destServerPath,
   tempPath,
-  fileTimePath,
   kConfigPath
 } = require('../config/paths');
 
