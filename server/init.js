@@ -23,6 +23,9 @@ let {
 
 const kConfig = require(kConfigPath);
 
+const packageName = 'package.json';
+const packagePath = resolveApp(packageName);
+
 // 配置
 const config = {
   envDefault: {
@@ -76,6 +79,7 @@ const userPort = Math.ceil(program.port);
 
 // 启动服务
 const runServer = (devServerPath, port, webpackDevPath, outputPath, publicPath, inject) => {
+  console.log('正在为您启动本地服务...');  
   require(devServerPath)({
     port,
     webpackConfig: require(webpackDevPath)(outputPath, publicPath),
@@ -94,6 +98,7 @@ const runBuild = (destServerPath, webpackDestPath, outputPath, publicPath, injec
 
 // 打包dll
 const runDll = (webpackDllConfig, func = (() => {})) => {
+  console.log('正在为您构建dll文件...');  
   webpack(webpackDllConfig).run(func);
 };
 
@@ -104,7 +109,19 @@ const runDest = (currentConfig, func = () => {}) => {
   removeFile(resolveApp(currentConfig.outputPath), ['.git']);
 
   console.log('正在编译中...');
-  runDll(require(webpackDestDllPath)(currentConfig.outputPath), () => {
+  if (isDll()) {
+    runDll(require(webpackDestDllPath)(currentConfig.outputPath), () => {
+      runBuild(
+        destServerPath,
+        webpackDestPath,
+        currentConfig.outputPath,
+        currentConfig.publicPath,
+        currentConfig.inject,
+        func
+      );
+    });
+  }
+  else {
     runBuild(
       destServerPath,
       webpackDestPath,
@@ -113,7 +130,7 @@ const runDest = (currentConfig, func = () => {}) => {
       currentConfig.inject,
       func
     );
-  });
+  }
 };
 
 // destServer
@@ -124,6 +141,27 @@ const destServer = (port, outputPath) => {
 };
 
 let {type, env, dll, server} = program;
+
+  // 判断是否需要打包dll文件
+const isDll = () => {
+  let prePackagePath = resolveApp(tempPath, packageName);
+
+  // 如果没有temp文件夹则认为是初次打包
+  if (fse.existsSync(prePackagePath)) {
+    // 判断依赖是否更新,如果更新则重新打包dll
+    if (JSON.stringify(require(prePackagePath).dependencies) !== JSON.stringify(require(packagePath).dependencies)) {
+      fse.copySync(packagePath, prePackagePath);
+      return true;
+    }
+    return false;
+  }
+  else {
+    fse.mkdirSync(tempPath);
+    fse.copySync(packagePath, prePackagePath);
+
+    return true;
+  }
+};
 
 // 当前配置
 const currentConfig = config.getEnVConfig(kConfig.env[env], type, env);
@@ -158,35 +196,8 @@ else if (type === 'server') {
       console.log('您输入的端口', userPort ,'被占用,重新为您分配了一个端口:', port);
     }
 
-    let webpackDllConfig = '';
-
-    // 判断是否需要打包dll文件
-    if (fse.existsSync(fileTimePath)) {
-      let fileTime = require(fileTimePath);
-      let devDllTime = fse.lstatSync(webpackDevDllPath).mtimeMs;
-
-      if (devDllTime > fileTime.devDllTime) {
-        console.log('正在为您重新构建dll文件...');
-        webpackDllConfig = require(webpackDevDllPath)(currentConfig.outputPath);
-
-        fileTime.devDllTime = devDllTime;
-        fse.writeFileSync(fileTimePath, JSON.stringify(fileTime));
-      }
-    }
-    else {
-      console.log('正在为您构建dll文件...');
-      webpackDllConfig = require(webpackDevDllPath)(currentConfig.outputPath);
-
-      fse.mkdirSync(tempPath);
-      fse.writeFileSync(fileTimePath, JSON.stringify({
-        devDllTime: fse.lstatSync(webpackDevDllPath).mtimeMs
-      }));
-    }
-
-    console.log('正在为您启动本地服务...');
-    if (webpackDllConfig) {
-      runDll(webpackDllConfig, () => {
-
+    if (isDll()) {
+      runDll(require(webpackDevDllPath)(currentConfig.outputPath), () => {
         runServer(devServerPath, port, webpackDevPath, currentConfig.outputPath, currentConfig.publicPath, currentConfig.inject);
       });
     }
@@ -199,27 +210,3 @@ else if (type === 'server') {
 else if (type === 'build') {
   runDest(currentConfig);
 }
-
-/*let fileTimeObj = {
-  create: () => {
-    console.log('正在为您构建dll文件...');
-    shell.exec('npm run devdll');
-
-    fs.mkdirSync(tempPath);
-    fs.writeFileSync(fileTimePath, JSON.stringify({
-      devDllTime: fs.lstatSync(webpackDevDllPath).mtimeMs
-    }));
-  },
-  up: () => {
-    let fileTime = require(fileTimePath);
-    let devDllTime = fs.lstatSync(webpackDevDllPath).mtimeMs;
-
-    if (devDllTime > fileTime.devDllTime) {
-      console.log('正在为您重新构建dll文件...');
-      shell.exec('npm run devdll');
-
-      fileTime.devDllTime = devDllTime;
-      fs.writeFileSync(fileTimePath, JSON.stringify(fileTime));
-    }
-  }
-};*/
