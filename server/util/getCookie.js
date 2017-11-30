@@ -1,34 +1,26 @@
-const HeadlessChrome = require('simple-headless-chrome');
-const browser = new HeadlessChrome({
-  headless: true
-});
+const {Chromeless} = require('chromeless');
+const chromeless = new Chromeless({visible: true});
 
 module.exports = async ({url, fill, submit} = config) => {
-  await browser.init();
-  const mainTab = await browser.newTab({privateTab: false});
+  await chromeless
+    .goto(url)
+    .evaluate((fill, submit) => {
+      for (let section of fill) {
+        document.querySelector(section.selector).value = section.value;
+      }
 
-  await mainTab.goTo(url);
+      document.querySelector(submit).click();
+    }, fill, submit)
+    .wait(600);
 
-  await (async () => {
-    for (let section of fill) {
-      await mainTab.fill(section.selector, section.value);
-    }
-  })();
-
-  await mainTab.wait(1000);
-
-  await mainTab.click(submit);
-  await mainTab.wait(1500);
-
-  const cookie = await mainTab.getCookies();
-  const cookies = cookie.cookies;
+  const cookie = await chromeless.cookies();
   let cookieStr = '';
 
-  cookies.forEach(cookie => {
+  cookie.forEach(cookie => {
     cookieStr += cookie.name + '=' + cookie.value + ';';
   });
-  
-  await browser.close();
+
+  await chromeless.end();
 
   return cookieStr;
 };

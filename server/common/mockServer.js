@@ -108,7 +108,6 @@ module.exports = (app, server, staticPath) => {
                       }
                       catch (err) {
                       }
-
                       resolve(data);
                   });
               }

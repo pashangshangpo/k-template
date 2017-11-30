@@ -3,24 +3,20 @@ module.exports = {
     open: true,
     delay: 0,
     cookie: {
-      url: 'http://www.xxx.com',
+      url: 'http://www.xx.top/login',
       fill: [
         {
-          selector: '#TANGRAM__PSP_3__userName',
-          value: 'imaptest0203'
+          selector: '#user',
+          value: '1'
         },
         {
-          selector: '#TANGRAM__PSP_3__password',
-          value: 'aaa'
-        },
-        {
-          selector: '#TANGRAM__PSP_3__verifyCode',
-          value: 'aaaa'
+          selector: '#pass',
+          value: '1'
         }
       ],
-      submit: '#TANGRAM__PSP_3__submit'
+      submit: '#content > div.aui-page-panel > div > section > form > div.buttons > input'
     },
-    server: 'http://www.xx.com'
+    server: 'http://www.xx.top'
   },
   request: {
     'get /api/get': ctx => {
