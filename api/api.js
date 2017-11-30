@@ -2,10 +2,25 @@ module.exports = {
   config: {
     open: true,
     delay: 0,
-    cookie: request => {
-      // request
+    cookie: {
+      url: 'http://www.xxx.com',
+      fill: [
+        {
+          selector: '#TANGRAM__PSP_3__userName',
+          value: 'imaptest0203'
+        },
+        {
+          selector: '#TANGRAM__PSP_3__password',
+          value: 'aaa'
+        },
+        {
+          selector: '#TANGRAM__PSP_3__verifyCode',
+          value: 'aaaa'
+        }
+      ],
+      submit: '#TANGRAM__PSP_3__submit'
     },
-    server: 'http://www.ilingdai.com'
+    server: 'http://www.xx.com'
   },
   request: {
     'get /api/get': ctx => {

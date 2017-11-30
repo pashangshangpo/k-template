@@ -77,12 +77,12 @@ module.exports = (app, server, staticPath) => {
   };
 
   // 转发请求
-  let requestServer = (url, req) => {
+  let requestServer = async (url, req) => {
       return new Promise(resolve => {
           let urlParse = urlTo.parse(url);
           let head = req.headers;
           let temp = {
-              'Cookie': apiConfig.cookie || ''
+              'Cookie': apiConfig.cookie
           };
 
           if (head['content-length']) {
@@ -127,6 +127,14 @@ module.exports = (app, server, staticPath) => {
   const api = require(apiPath);
   const apiConfig = api.config;
   const apiRequest = api.request;
+
+  if (typeof apiConfig.cookie === 'object') {
+    setTimeout(() => {
+      (async () => {
+        apiConfig.cookie = await require('../util/getCookie')(apiConfig.cookie);
+      })();
+    });
+  }
 
   // 数据返回之后先进行其他处理再返回
   const resThen = async () => {
