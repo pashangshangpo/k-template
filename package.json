@@ -6,8 +6,8 @@
   "license": "MIT",
   "scripts": {
     "new": "node ./server/create.js",
-    "start": "node ./server/index.js -t start",
-    "build": "node ./server/index.js -t build",
+    "start": "node-dev ./server/index.js -t start",
+    "build": "node-dev ./server/index.js -t build",
     "server": "node ./server/index.js -t server",
     "lint": "node_modules/.bin/eslint --fix ./src",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -50,6 +50,7 @@
     "koa2": "2.0.0-alpha.7",
     "mockjs": "^1.0.1-beta3",
     "multiparty": "4.1.3",
+    "node-dev": "^3.1.3",
     "openbrowser": "^1.0.2",
     "postcss-cssnext": "^3.0.2",
     "postcss-import": "^11.0.0",

@@ -1,6 +1,6 @@
 const execSync = require('child_process').execSync;
 const fs = require('fs');
-const {resolveApp} = require('../config/paths');
+const {resolveApp, kConfigPath} = require('../config/paths');
 
 // 判断是否存在yarn
 const isYarn = () => {

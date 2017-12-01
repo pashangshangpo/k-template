@@ -12,7 +12,9 @@ const chokidar = require('chokidar');
 const mockServer = require('./common/mockServer');
 const {fileContentReplace, replace, appendCss, appendJs, getIp, joinStr} = require('./util/util');
 let {
-  templatePath, 
+  resolveApp,
+  apiPath,
+  templatePath,
   dllPath, 
   dllName,
   cssPath, 
@@ -22,7 +24,8 @@ let {
 } = require('../config/paths');
 const dllEntry = require(webpackDllCommonPath).entry;
 
-module.exports = ({port, webpackConfig, inject = {}, autoOpenBrowser} = config) => {
+module.exports = config => {
+  const {port, webpackConfig, inject = {}, autoOpenBrowser} = config;
   const entry = webpackConfig.entry;
   const outputPath = webpackConfig.output.path;
   const publicPath = webpackConfig.output.publicPath;

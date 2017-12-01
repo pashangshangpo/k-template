@@ -1,5 +1,5 @@
 const {Chromeless} = require('chromeless');
-const chromeless = new Chromeless({visible: true});
+const chromeless = new Chromeless();
 
 module.exports = async ({url, fill, submit} = config) => {
   await chromeless
