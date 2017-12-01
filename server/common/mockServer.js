@@ -249,7 +249,7 @@ module.exports = (app, server, staticPath) => {
       path = url;
     }
 
-    path = resolveApp(staticPath, path);
+    path = resolveApp(staticPath, urlTo.parse(path).pathname);
 
     if (!fse.existsSync(path)) {
       url = joinStr(apiConfig.server, url);

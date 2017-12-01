@@ -33,11 +33,6 @@ module.exports = config => {
   inject.css = inject.css || [];
   inject.js = inject.js || [];
 
-  // 返回静态资源
-  router.get('/', cxt => {
-    cxt.body = fs.readFileSync(join(outputPath, 'index.html')).toString();
-  });
-  
   // 引用dll包
   for (let key in dllEntry) {
     inject.js.push(join(dllPath, joinStr(key, '.', dllName)));
@@ -47,10 +42,6 @@ module.exports = config => {
           manifest: require(join(outputPath, dllPath, joinStr(key, '.', manifestName)))
       })
     );
-
-    router.get(join(dllPath, joinStr(key, '.', dllName)), cxt => {
-      cxt.body = fs.readFileSync(join(outputPath, dllPath, joinStr(key, '.', dllName))).toString();
-    });
   }
 
   inject.css.push(cssPath);
@@ -102,10 +93,6 @@ module.exports = config => {
     for (let key in entry) {
       html = appendJs(html, [joinStr(key, '.js')], true); 
       fs.writeFileSync(join(outputPath, `${key}.html`), html);
-  
-      router.get(`/${key}`, cxt => {
-        cxt.body = html;
-      });
     }
   };
   
