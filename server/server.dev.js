@@ -1,5 +1,5 @@
 const http = require('http');
-const fs = require('fs');
+const fs = require('fs-extra');
 const {resolve, join} = require('path');
 const openbrowser = require('openbrowser');
 const Koa = require('koa2');
@@ -60,16 +60,13 @@ module.exports = config => {
   });
   
   let timer = null;
-  chokidar.watch([templatePath]).on('all', (event, path) => {
+  chokidar.watch([templatePath]).on('change', () => {
     clearTimeout(timer);
-  
-    if (event === 'change') {
-      // 延迟刷新
-      timer = setTimeout(() => {
-        reloadHTML();
-        middleware.hot.publish({action: 'reload'});
-      }, 10);
-    }
+    // 延迟刷新
+    timer = setTimeout(() => {
+      reloadHTML();
+      middleware.hot.publish({action: 'reload'});
+    }, 10);
   });
   
   let reloadHTML = () => {
