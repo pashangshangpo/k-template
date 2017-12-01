@@ -1,5 +1,6 @@
 const urlTo = require('url');
 const http = require('http');
+const https = require('https');
 const mime = require('mime');
 const fse = require('fs-extra');
 const querystring = require('querystring');
@@ -92,8 +93,11 @@ module.exports = (app, server, staticPath) => {
           if (head['content-type']) {
               temp['content-type'] = head['content-type'];
           }
+          
+          let protocol = urlParse.protocol.split(':')[0];
+          let type = protocol === 'https' ? https : http;
 
-          let serverReq = http.request(
+          let serverReq = type.request(
               {
                   hostname: urlParse.hostname,
                   port: urlParse.port,
@@ -128,11 +132,9 @@ module.exports = (app, server, staticPath) => {
   const apiRequest = api.request;
 
   if (typeof apiConfig.cookie === 'object') {
-    setTimeout(() => {
-      (async () => {
-        apiConfig.cookie = await require('../util/getCookie')(apiConfig.cookie);
-      })();
-    });
+    (async () => {
+      apiConfig.cookie = await require('../util/getCookie')(apiConfig.cookie);
+    })();
   }
 
   // 数据返回之后先进行其他处理再返回

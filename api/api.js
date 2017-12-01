@@ -3,20 +3,20 @@ module.exports = {
     open: true,
     delay: 0,
     cookie: {
-      url: 'http://www.xx.top/login',
+      url: 'http://www.xx.com/login',
       fill: [
         {
-          selector: '#user',
-          value: '1'
+          selector: '#login_username',
+          value: 'xx'
         },
         {
-          selector: '#pass',
-          value: '1'
+          selector: '#login_password',
+          value: 'xx'
         }
       ],
-      submit: '#content > div.aui-page-panel > div > section > form > div.buttons > input'
+      submit: '#login-form > div:nth-child(4) > button'
     },
-    server: 'http://www.xx.top'
+    server: 'http://www.xx.com'
   },
   request: {
     'get /api/get': ctx => {

@@ -21,6 +21,6 @@ module.exports = async ({url, fill, submit} = config) => {
   });
 
   await chromeless.end();
-
+  
   return cookieStr;
 };
