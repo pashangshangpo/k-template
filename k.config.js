@@ -4,8 +4,8 @@ module.exports = {
       './src/index.js'
     ]
   },
-  move: ['src/font'],
   autoOpenBrowser: true,
+  inject: {},
   env: {
     dest: {
       publicPath: '/',
@@ -14,7 +14,6 @@ module.exports = {
     dev: {
       publicPath: '/',
       outputPath: 'dist/dev',
-      move: ['src/dev'],
       inject: {
         js: [
           function () {
