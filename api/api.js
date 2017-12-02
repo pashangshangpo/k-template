@@ -1,25 +1,43 @@
 module.exports = {
   config: {
     open: true,
+    delay: 0,
     cookie: '',
-    server: 'http://www.xx.com/'
+    // cookie: {
+    //   url: 'http://www.xx.com/login',
+    //   fill: [
+    //     {
+    //       selector: '#login_username',
+    //       value: 'xx'
+    //     },
+    //     {
+    //       selector: '#login_password',
+    //       value: 'xx'
+    //     }
+    //   ],
+    //   submit: '#login-form > div:nth-child(4) > button'
+    // },
+    server: 'http://www.xx.com'
   },
   request: {
     'get /api/get': ctx => {
-      ctx.body = {
+      return {
         status: 'ok',
         data: 'get'
       };
     },
     '/api/all': ctx => {
-      ctx.body = {
+      return {
           status: 'ok',
-          data: 'all'
+          data: 'all',
+          url: ctx.url
       };
     },
-    '/api/json': {json: 111},
+    '/api/json': {
+      json: 1121
+    },
     '/api/user/:id': cxt => {
-      cxt.body = {
+       return {
         status: 'ok',
         user: cxt.params.id,
         query: cxt.query

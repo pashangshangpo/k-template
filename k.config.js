@@ -4,6 +4,8 @@ module.exports = {
       './src/index.js'
     ]
   },
+  autoOpenBrowser: true,
+  inject: {},
   env: {
     dest: {
       publicPath: '/',

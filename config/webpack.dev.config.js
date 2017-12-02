@@ -39,6 +39,7 @@ module.exports = (outputPath, publicPath) => {
         {
           test: /\.css$/,
           exclude: /(node_modules|bower_components)/,
+          include: [resolveApp('src')],
           use: ['css-hot-loader'].concat(ExtractTextPlugin.extract({
             fallback: 'style-loader',
             use: [
@@ -68,7 +69,7 @@ module.exports = (outputPath, publicPath) => {
         path: outputPath,
         publicPath: publicPath
     },
-    devtool: 'source-map',
+    devtool: 'eval-source-map',
     plugins: [
       // 提取css
       new ExtractTextPlugin(cssPath),
@@ -84,7 +85,8 @@ module.exports = (outputPath, publicPath) => {
       }),
       // 热加载
       new webpack.HotModuleReplacementPlugin(),
-      new webpack.NamedModulesPlugin()
+      new webpack.NamedModulesPlugin(),
+      new webpack.optimize.ModuleConcatenationPlugin()
     ]
   });
 };
