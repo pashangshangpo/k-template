@@ -1,5 +1,9 @@
 ### 简介
 
+快速搭建webpack项目模板
+
+可基于此模板搭建一个自己的脚手架工具
+
 ### 快速开始
 
 ```
@@ -139,8 +143,10 @@ module.exports = {
 ```
 
 ```html
-ctx: koa-router返回的请求对象 相关教程: https://github.com/alexmingoia/koa-router
+ctx: koa-router返回的请求对象
 ```
+
+koa-router: https://github.com/alexmingoia/koa-router
 
 另外还提供了几个常用工具
 
@@ -151,33 +157,9 @@ cxt.mock = Mock.mock;
 cxt.Random = Mock.Random;
 ```
 
-Mock使用的是Mockjs: 相关教程: https://github.com/nuysoft/Mock/wiki/Getting-Started
+Mock使用的是Mockjs: https://github.com/nuysoft/Mock/wiki/Getting-Started
 
-#### /config 相关配置
-
-#### /config/template.html html模板
-
-可自行修改
-
-#### /config/postcss.config.js postcss配置
-
-可自行修改
-
-#### /config/webpack.common.js webpack公共配置
-
-可自行修改
-
-#### /config/webpack.dest.config.js webpack生产环境配置
-
-可自行修改
-
-#### /config/webpack.dev.config.js webpack开发环境配置
-
-可自行修改
-
-#### /server 相关服务配置,不需要动
-
-#### /k.config.js 自定义配置 !!
+#### /k.config.js 自定义配置
 
 ```html
 module.exports = {
@@ -264,6 +246,28 @@ yarn build -e dest
 ```
 
 执行以上命令会将dest用做编译配置
+
+#### /config/template.html html模板
+
+可自行修改
+
+#### /config/postcss.config.js postcss配置
+
+可自行修改
+
+#### /config/webpack.common.js webpack公共配置
+
+可自行修改
+
+#### /config/webpack.dest.config.js webpack生产环境配置
+
+可自行修改
+
+#### /config/webpack.dev.config.js webpack开发环境配置
+
+可自行修改
+
+#### /server 相关服务配置,不需要动
 
 #### /src 写代码的地方
 
