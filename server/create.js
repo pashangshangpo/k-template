@@ -1,55 +1,38 @@
-const {resolve, join} = require('path');
-const fs = require('fs');
-const shell = require('shelljs');
+const fse = require('fs-extra');
 const {fileContentReplace} = require('./util/util');
-const {root, project} = require('../config/config');
+const {project, resolveApp} = require('../config/paths');
 const ideaName = process.argv[2];
 const filter = [
-    '.git',
-    'README.md',
-    'node_modules',
-    '.DS_Store',
-    '.idea'
+	'.git',
+	'README.md',
+	'node_modules',
+	'.DS_Store',
+	'.idea',
+	'dev',
+	'dist',
+	'temp'
 ];
 
-
 if (!ideaName) {
-    console.log('请输入项目名, 如: [yarn|npm] run create react-demo');
-    return false;
+	console.log('请输入项目名, 如: [yarn|npm] new react-demo');
+	return false;
 }
 
-// 获取当前路径
-let pwd = () => {
-    return shell.pwd().stdout;
-};
+// 模板路径
+const templatePath = resolveApp();
+// 目标路径
+const targetPath = resolveApp('../', ideaName);
 
-// 过滤文件
-let filterFile = (source, filter) => {
-    return source.filter(key => {
-        return !filter.some(item => key === item);
-    });
-};
+// 复制模板
+fse.copySync(templatePath, targetPath, {filter: fileName => {
+	return !filter.some(name => {
+		return resolveApp(name) === fileName;
+	});
+}});
 
-// 复制文件
-const cp = (source, name) => {
-  const tplPath = pwd();
-  shell.cd('../');
-  const curPath = pwd();
-  shell.mkdir(join(curPath, name));
-
-  source.forEach(key => {
-      shell.cp('-Rf', join(tplPath, key), join(curPath, name, key));
-  });
-};
-
-cp(
-    filterFile(shell.ls('-A'), filter),
-    ideaName
-);
-
-// 文件内容替换
-fileContentReplace(join(pwd(), ideaName, 'package.json'), {
-  [project]: ideaName
+// 替换package name
+fileContentReplace(targetPath + '/package.json', {
+	[project]: ideaName
 });
 
 console.log(`项目创建完成, 请cd ../${ideaName}`);
