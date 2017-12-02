@@ -58,13 +58,14 @@ const config = {
 
 // 获取用户输入的信息
 program
-.version('0.0.1')
-.description('一个快速搭建Webpack环境工具')
-.option('-t, --type [type]', '你要执行的命令是?如:start,build,server')
-.option('-p, --port [port]', `端口`, defaultPort)
-.option('-e, --env [env]', '上下文环境')
-.option('-s, --server [server]', '生产环境起服务,调试')
-.parse(process.argv);
+  .version('0.0.1')
+  .description('一个快速搭建Webpack环境工具')
+  .option('-t, --type [type]', '你要执行的命令是?如:start,build,server')
+  .option('-p, --port [port]', `端口`, defaultPort)
+  .option('-e, --env [env]', '上下文环境')
+  .option('-s, --server [server]', '生产环境起服务,调试')
+  .option('-d, --debug [debug]', '生产环境开启devtool,用于调试,上线请勿使用')
+  .parse(process.argv);
 
 // 参数判断
 if (!program.env) {
@@ -86,11 +87,12 @@ const runServer = (devServerPath, port, webpackDevPath, outputPath, publicPath, 
 };
 
 // 编译
-const runBuild = (destServerPath, webpackDestPath, outputPath, publicPath, inject, func = (() => {})) => {
+const runBuild = (destServerPath, webpackDestPath, outputPath, publicPath, inject, func = (() => {}), debug) => {
   require(destServerPath)({
     webpackConfig: require(webpackDestPath)(outputPath, publicPath),
     inject,
-    func
+    func,
+    debug
   });
 };
 
@@ -117,7 +119,7 @@ const runDll = (webpackDllConfig, func = (() => {})) => {
 };
 
 // 编译dest
-const runDest = (currentConfig, func = () => {}) => {
+const runDest = (currentConfig, func = () => {}, debug) => {
   console.log('正在删除废弃数据...');
   // 删除之前编译出来的数据,但不删除.git目录
   removeFile(resolveApp(currentConfig.outputPath), ['.git']);
@@ -130,7 +132,8 @@ const runDest = (currentConfig, func = () => {}) => {
       currentConfig.outputPath,
       currentConfig.publicPath,
       currentConfig.inject,
-      func
+      func,
+      debug
     );
   });
 };
@@ -166,7 +169,7 @@ const isDll = () => {
   }
 };
 
-let {type, env, server} = program;
+let {type, env, server, debug} = program;
 
 // 当前配置
 const currentConfig = config.getEnVConfig(kConfig.env[env], type, env);
@@ -182,7 +185,7 @@ if (server || type === 'server') {
 
     // 编译
     if (type === 'build') {
-      runDest(currentConfig, destServer.bind(null, port, currentConfig.outputPath, currentConfig.autoOpenBrowser));
+      runDest(currentConfig, destServer.bind(null, port, currentConfig.outputPath, currentConfig.autoOpenBrowser), debug);
     }
     // 判断是否编译过
     else if (!fse.existsSync(resolveApp(currentConfig.outputPath))) {

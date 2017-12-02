@@ -54,8 +54,15 @@ module.exports = config => {
     compiler: compiler,
     dev: {
       publicPath: publicPath,
+      stats: {
+        chunks: false,
+        colors: true
+      },
       noInfo: true,
-      hot: true
+      hot: true,
+      lazy: false,
+      historyApiFallback: true,
+      poll: true
     }
   });
   
