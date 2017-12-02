@@ -1,5 +1,6 @@
 const {postcssPath, kConfigPath, resolveApp} = require('./paths');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const WebpackMd5Hash = require('webpack-md5-hash');
 const util = require('../server/util/util');
 const kConfig = require(kConfigPath);
 
@@ -33,6 +34,9 @@ module.exports = {
         ]
       }
     ]
-  }
+  },
+  plugins: [
+    new WebpackMd5Hash()
+  ]
 };
 
