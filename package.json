@@ -5,8 +5,9 @@
   "repository": "https://github.com/pashangshangpo/k-template.git",
   "license": "MIT",
   "scripts": {
+    "prestart": "node ./server/install.js",
     "new": "node ./server/create.js",
-    "start": "node ./server/install.js && node-dev ./server/index.js -t start",
+    "start": "node-dev ./server/index.js -t start",
     "build": "node ./server/index.js -t build",
     "server": "node ./server/index.js -t server",
     "lint": "node_modules/.bin/eslint --fix ./src",
